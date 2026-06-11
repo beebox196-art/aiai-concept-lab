@@ -40,6 +40,7 @@ HTML/CSS/JS in a single `index.html` per folder.
 | 5 | `site-5-greenhouse/` | **The Greenhouse** (Organism × Machine synthesis) | Germination boot (pulsing seed), sections grow from seed-outline to glass panel ("GROWN ✓"), an SVG vine grows down the left edge with scroll and sprouts a node at each section, firefly field, potting-bench feed, seasons = Sow/Grow/Prune/Harvest. |
 | 6 | `site-6-beat-the-machine/` | **Beat the Machine** (playable argument) | 30-second inbox-triage game (details §4). |
 | 7 | `site-7-machine-live/` | **The Machine, Live** (real data) | Concept 4A driven by an allowlist extraction of Luna's real reports (details §5). |
+| 9 | `site-9-the-shift/` | **The Shift** (sequel to #6) | You ARE the machine for the same Tuesday 07:00→11:02 (details §4b). Numbered 9 to match the agent team's concept list it came from. |
 
 Hub: `index.html` (cards for all of the above). Shared logos: `assets/img/`
 (copies from `Website-deploy/assets/img/`, referenced as `../assets/img/...`).
@@ -83,6 +84,32 @@ Single file: `site-6-beat-the-machine/index.html`. No dependencies, no network c
 - **Paths & hooks**: "I'd rather just watch" button = demo mode (machine round + generic
   verdict). URL param `?t=N` (5–30) shortens the round for demos/testing,
   e.g. `index.html?t=10`. `aria-live` announces new emails for screen readers.
+
+---
+
+## 4b. Concept 9 — The Shift (the diptych's other half)
+
+Single file: `site-9-the-shift/index.html`. No dependencies. Built 2026-06-11 from the agent
+team's concept list (#9, Kieran's) after Adam picked it; designed as the explicit **sequel to
+Beat the Machine** — same fictional Hartley's morning, opposite side of the glass.
+
+- **The 11:02 conceit**: Beat the Machine's header timestamp is "TUE 11:02" — the moment Dave
+  leaves his meetings. The Shift runs 07:00→11:02 of the same day and ends exactly where the
+  first game begins. The verdict screens of both cross-link to each other.
+- **Structure**: timeline array `T` (autos/ambients flow past as a calm console log;
+  invisible-action counters climb) interrupted by five judgement calls in `J`:
+  `scam` (quarantine silently vs alert Dave), `graham` (interrupt now vs holding reply in
+  Dave's voice vs wait), `becky` (draft approval vs overstep and approve vs file),
+  `trafford` (tone call — no policy for feelings), `pipe` (emergency: all options escalate;
+  this is what interruptions are FOR).
+- **Key metric**: "times Dave interrupted" — the end screen renders **Dave's phone lock screen**
+  containing only the notifications the player actually sent. The ideal shift shows one (the pipe).
+- **Designed beats**: the Trafford reveal *always* shows Dave preferring a different option —
+  the point is subjectivity, not correctness ("judgement calls look different from the other
+  side of the counter"). Overstepping on Becky triggers a boundary reveal ("ours drafts the
+  click; the human clicks it"). 0-interrupt and ≥3-interrupt shifts get their own reveals.
+- **Hooks**: `?fast=1` slashes montage delays for demos/testing. `aria-live` announces
+  judgement moments; reduced-motion drops log animations.
 
 ---
 

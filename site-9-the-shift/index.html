@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIAI — Concept 9: The Shift | Be the Machine</title>
+<meta name="description" content="Concept 9 — the sequel to Beat the Machine. Same Tuesday at Hartley's, other side of the glass: you are the operations AI on shift. Most of your work will be invisible. That's the point.">
+<link rel="icon" type="image/x-icon" href="../assets/img/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+    --deep:#0d1717;
+    --console:#122120;
+    --console-2:#16302c;
+    --mint:#6fe8c0;
+    --cyan:#7cc8e8;
+    --amber:#ffb454;
+    --alert:#ff7a7a;
+    --paper:#fbf7f1;
+    --p-ink:#2c2433;
+    --p-soft:#6b6175;
+    --ink:#e8f2ee;
+    --dim:#8fa8a0;
+    --hair:rgba(143,168,160,.2);
+    --mono:'JetBrains Mono',monospace;
+    --disp:'Space Grotesk',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--deep);color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.6;overflow-x:hidden;min-height:100vh}
+::selection{background:var(--mint);color:var(--deep)}
+h1,h2,h3{font-family:var(--disp);letter-spacing:-.02em;line-height:1.12}
+button{font-family:inherit;cursor:pointer}
+
+/* machine-room backdrop: soft phosphor pools + faint raster */
+.glow{position:fixed;inset:0;z-index:0;pointer-events:none;filter:blur(95px)}
+.glow i{position:absolute;border-radius:50%}
+.glow .g1{width:52vw;height:52vw;background:radial-gradient(circle,rgba(111,232,192,.16),transparent 65%);top:-16%;left:-10%;animation:gB 13s ease-in-out infinite}
+.glow .g2{width:44vw;height:44vw;background:radial-gradient(circle,rgba(124,200,232,.13),transparent 65%);bottom:-18%;right:-8%;animation:gB 16s ease-in-out infinite 5s}
+@keyframes gB{0%,100%{opacity:.5}50%{opacity:.9}}
+.raster{
+    position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+    background:repeating-linear-gradient(0deg,rgba(143,168,160,.04) 0 1px,transparent 1px 4px);
+}
+@media(prefers-reduced-motion:reduce){.glow i{animation:none}}
+
+.concept-tag{
+    position:fixed;bottom:1rem;left:1rem;z-index:95;text-decoration:none;font-family:var(--mono);font-size:.68rem;
+    color:var(--mint);background:rgba(18,33,32,.92);border:1px solid rgba(111,232,192,.4);border-radius:999px;
+    padding:.45rem .9rem;backdrop-filter:blur(6px);
+}
+
+.stage{position:relative;z-index:2;max-width:820px;margin:0 auto;padding:1.2rem 1.2rem 4rem;min-height:100vh;display:flex;flex-direction:column}
+.topbar{
+    display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.6rem 0 1.4rem;
+    font-family:var(--mono);font-size:.7rem;color:var(--dim);flex-wrap:wrap;
+}
+.topbar img{height:24px;opacity:.9}
+.topbar .clock{font-size:1rem;color:var(--mint);font-weight:700;letter-spacing:.1em}
+.topbar .dave{display:flex;align-items:center;gap:.5rem}
+.topbar .dave i{width:7px;height:7px;border-radius:50%;background:var(--amber);animation:dPulse 2.4s infinite}
+@keyframes dPulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+.screen{display:none;flex:1;flex-direction:column;justify-content:center;animation:sIn .5s ease}
+.screen.on{display:flex}
+@keyframes sIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.screen{animation:none}}
+
+/* ===== intro ===== */
+#intro h1{font-size:clamp(2.1rem,6.5vw,3.6rem);margin-bottom:1.1rem}
+#intro h1 em{font-style:normal;color:var(--mint)}
+.clockon{
+    background:rgba(18,33,32,.75);border:1px solid var(--hair);border-radius:16px;padding:1.5rem 1.6rem;
+    margin:1.2rem 0 1.8rem;max-width:36rem;font-family:var(--mono);font-size:.82rem;line-height:2.1;color:var(--dim);
+}
+.clockon b{color:var(--ink)}
+.clockon .mint{color:var(--mint)}
+#intro .note{color:var(--dim);font-size:.92rem;max-width:34rem;margin-bottom:1.8rem}
+#intro .note a{color:var(--amber)}
+.btn{
+    display:inline-flex;align-items:center;gap:.6rem;padding:1rem 2rem;border-radius:999px;border:none;
+    font-weight:700;font-size:1rem;text-decoration:none;font-family:var(--disp);transition:transform .15s,box-shadow .2s;
+}
+.btn:active{transform:scale(.97)}
+.btn-go{background:linear-gradient(110deg,var(--mint),var(--cyan));color:var(--deep);box-shadow:0 14px 40px -14px rgba(111,232,192,.55)}
+.btn-go:hover{transform:translateY(-2px)}
+.btn-quiet{background:none;border:1px solid var(--hair);color:var(--dim);font-size:.9rem;font-weight:500}
+.btn-quiet:hover{color:var(--ink);border-color:var(--dim)}
+
+/* ===== shift console ===== */
+#shift{justify-content:flex-start}
+.meters{display:flex;gap:1.6rem;font-family:var(--mono);font-size:.72rem;color:var(--dim);margin-bottom:1rem;flex-wrap:wrap}
+.meters b{display:block;font-size:1.35rem;color:var(--ink);font-family:var(--disp)}
+.meters .m-int b{color:var(--amber)}
+#log{
+    background:rgba(13,23,23,.7);border:1px solid var(--hair);border-radius:14px;
+    height:260px;overflow-y:auto;padding:.9rem 1.1rem;font-family:var(--mono);font-size:.74rem;line-height:1.95;
+    scrollbar-width:thin;
+}
+#log div{opacity:0;animation:lIn .35s forwards}
+@keyframes lIn{to{opacity:1}}
+#log .t{color:var(--dim);margin-right:.5em}
+#log .ok{color:var(--mint)}
+#log .amb{color:var(--cyan)}
+#log .warn{color:var(--amber)}
+#log .alarm{color:var(--alert);font-weight:700}
+@media(prefers-reduced-motion:reduce){#log div{animation:none;opacity:1}}
+
+/* judgement card */
+#judge{margin-top:1.1rem;display:none}
+#judge.on{display:block;animation:jIn .3s ease}
+@keyframes jIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.jflag{font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);margin-bottom:.6rem;display:flex;align-items:center;gap:.6rem}
+.jflag i{width:8px;height:8px;border-radius:50%;background:var(--amber);animation:dPulse 1.2s infinite}
+.jflag.alarm{color:var(--alert)} .jflag.alarm i{background:var(--alert)}
+.email{
+    background:var(--paper);color:var(--p-ink);border-radius:14px;padding:1.2rem 1.4rem;
+    box-shadow:0 24px 60px -28px rgba(0,0,0,.7);
+}
+.email .from{font-family:var(--mono);font-size:.7rem;color:var(--p-soft);margin-bottom:.4rem;word-break:break-all}
+.email .subj{font-family:var(--disp);font-weight:700;font-size:1.1rem;margin-bottom:.45rem}
+.email .prev{font-size:.9rem;color:var(--p-soft)}
+.analysis{
+    margin-top:.8rem;font-family:var(--mono);font-size:.7rem;color:var(--cyan);line-height:1.9;
+    border-left:2px solid rgba(124,200,232,.4);padding-left:.9rem;
+}
+.choices{display:flex;flex-direction:column;gap:.55rem;margin-top:1rem}
+.choice{
+    text-align:left;background:rgba(18,33,32,.85);border:1px solid var(--hair);border-radius:12px;
+    padding:.85rem 1.1rem;color:var(--ink);font-size:.88rem;transition:border-color .2s,transform .15s;
+}
+.choice:hover{border-color:var(--mint);transform:translateX(4px)}
+.choice small{display:block;font-family:var(--mono);font-size:.66rem;color:var(--dim);margin-top:.2rem}
+
+/* ===== end of shift ===== */
+.kicker{font-family:var(--mono);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--mint);margin-bottom:.9rem}
+#report h2{font-size:clamp(1.8rem,5.5vw,2.8rem);margin-bottom:1.4rem}
+.tally{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.8rem;margin-bottom:1.6rem}
+.tally div{background:rgba(18,33,32,.75);border:1px solid var(--hair);border-radius:12px;padding:1rem 1.1rem}
+.tally b{display:block;font-family:var(--mono);font-size:1.7rem;color:var(--mint)}
+.tally small{color:var(--dim);font-size:.72rem;font-family:var(--mono);line-height:1.5}
+
+/* dave's phone */
+.phone{
+    width:min(330px,90vw);margin:1.6rem 0;border-radius:26px;border:1px solid var(--hair);
+    background:linear-gradient(170deg,#1a2733,#101a22);padding:1.4rem 1rem 1.6rem;
+}
+.phone .ptime{text-align:center;font-family:var(--disp);font-size:2rem;font-weight:700;margin-bottom:.2rem}
+.phone .pdate{text-align:center;font-family:var(--mono);font-size:.68rem;color:var(--dim);margin-bottom:1.1rem}
+.notif{
+    background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);border-radius:12px;
+    padding:.65rem .8rem;margin-bottom:.5rem;font-size:.78rem;
+}
+.notif b{display:block;font-size:.72rem;font-family:var(--mono);color:var(--amber);margin-bottom:.15rem}
+.notif.none{text-align:center;color:var(--dim);font-family:var(--mono);font-size:.72rem;border-style:dashed}
+.phone .caption{font-family:var(--mono);font-size:.68rem;color:var(--dim);text-align:center;margin-top:.9rem;line-height:1.7}
+
+.reveal{
+    border-radius:14px;padding:1.1rem 1.3rem;margin:1rem 0;font-size:.92rem;max-width:42rem;
+    background:rgba(255,180,84,.08);border:1px solid rgba(255,180,84,.4);
+}
+.reveal b{display:block;font-family:var(--disp);margin-bottom:.3rem}
+.reveal span{color:var(--dim);font-size:.86rem}
+.reveal.good{background:rgba(111,232,192,.07);border-color:rgba(111,232,192,.4)}
+.moral{margin:1.6rem 0 2rem;max-width:38rem;font-size:1.04rem;line-height:1.8}
+.moral em{font-style:normal;color:var(--mint)}
+.endacts{display:flex;gap:1rem;flex-wrap:wrap;align-items:center}
+
+footer{position:relative;z-index:2;font-family:var(--mono);font-size:.7rem;color:var(--dim);text-align:center;padding:0 1rem 2rem}
+footer a{color:var(--mint);text-decoration:none}
+.srlive{position:absolute;left:-9999px}
+</style>
+</head>
+<body>
+
+<div class="glow" aria-hidden="true"><i class="g1"></i><i class="g2"></i></div>
+<div class="raster" aria-hidden="true"></div>
+<a class="concept-tag" href="../index.html">CONCEPT 9 · THE SHIFT — sequel to Beat the Machine</a>
+<div class="srlive" aria-live="polite" id="srlive"></div>
+
+<div class="stage">
+    <div class="topbar">
+        <img src="../assets/img/aiai-wordmark-white-transparent.png" alt="AIAI — Adventures in AI">
+        <span class="clock" id="clock">06:59</span>
+        <span class="dave"><i></i> DAVE: IN MEETINGS UNTIL 11:02</span>
+    </div>
+
+    <!-- ===== INTRO ===== -->
+    <section class="screen on" id="intro">
+        <h1>You've raced the machine.<br><em>Now be it.</em></h1>
+        <div class="clockon">
+            <b>SHIFT ASSIGNMENT</b><br>
+            role: <span class="mint">operations AI</span> · Hartley's Hire &amp; Supplies<br>
+            shift: <span class="mint">Tuesday 07:00 → 11:02</span><br>
+            human: Dave Hartley — in meetings, phone on silent-ish<br>
+            duties: the inbox, the briefing, the watching, <b>everything</b><br>
+            note: most of what you do well, nobody will ever see
+        </div>
+        <p class="note">Routine work handles itself — you'll watch it flow past. But five times this morning,
+        the flow will stop and ask you to <b>judge</b>. There are no right answers. There are only calls.
+        (Played <a href="../site-6-beat-the-machine/index.html">Beat the Machine</a>? That inbox chaos happens at 11:02 — in the world where you don't exist.)</p>
+        <div><button class="btn btn-go" id="startBtn">Clock on ▸</button></div>
+    </section>
+
+    <!-- ===== SHIFT ===== -->
+    <section class="screen" id="shift" aria-label="Your shift as the operations AI">
+        <div class="meters">
+            <div><b id="mDone">0</b>handled</div>
+            <div><b id="mInvis">0</b>invisible actions</div>
+            <div class="m-int"><b id="mInt">0</b>times Dave interrupted</div>
+        </div>
+        <div id="log" role="log"></div>
+        <div id="judge">
+            <p class="jflag" id="jflag"><i></i> <span id="jflagTxt">judgement required</span></p>
+            <div class="email">
+                <div class="from" id="jFrom"></div>
+                <div class="subj" id="jSubj"></div>
+                <div class="prev" id="jPrev"></div>
+                <div class="analysis" id="jAna"></div>
+            </div>
+            <div class="choices" id="jChoices"></div>
+        </div>
+    </section>
+
+    <!-- ===== END OF SHIFT ===== -->
+    <section class="screen" id="report">
+        <p class="kicker">11:02 — end of shift</p>
+        <h2 id="rHead">Shift complete. Dave never knew most of it happened.</h2>
+        <div class="tally" id="tally"></div>
+
+        <p class="kicker" style="margin-top:.6rem">what dave actually saw of your four hours</p>
+        <div class="phone">
+            <div class="ptime">11:02</div>
+            <div class="pdate">TUESDAY · HARTLEY'S HIRE &amp; SUPPLIES</div>
+            <div id="phoneNotifs"></div>
+            <p class="caption" id="phoneCaption"></p>
+        </div>
+
+        <div id="reveals"></div>
+
+        <p class="moral" id="moral"></p>
+        <div class="endacts">
+            <a class="btn btn-go" href="https://adventuresinai.co.uk/contact.html">Hire the real one ▸</a>
+            <a class="btn btn-quiet" href="../site-6-beat-the-machine/index.html">Play the other side — be the human</a>
+            <button class="btn btn-quiet" id="againBtn">Work the shift again</button>
+        </div>
+    </section>
+</div>
+
+<footer>concept 9 of the aiai lab — sequel to beat the machine · not the live site · <a href="https://adventuresinai.co.uk">adventuresinai.co.uk</a></footer>
+
+<script>
+(() => {
+const FAST = new URLSearchParams(location.search).has('fast');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = id => document.getElementById(id);
+const screens = ['intro','shift','report'];
+const show = id => screens.forEach(s => $(s).classList.toggle('on', s===id));
+const say = t => { $('srlive').textContent = t; };
+
+/* ============ state ============ */
+let handled=0, invisible=0, interrupts=0;
+let choices = {};            // judgement outcomes by id
+let daveNotifs = [];         // what reaches dave's phone
+let overstep = false;
+
+function bump(){ $('mDone').textContent=handled; $('mInvis').textContent=invisible; $('mInt').textContent=interrupts; }
+function log(cls, time, txt){
+    const d = document.createElement('div');
+    d.innerHTML = `<span class="t">${time}</span><span class="${cls}">${txt}</span>`;
+    $('log').appendChild(d); $('log').scrollTop = $('log').scrollHeight;
+    $('clock').textContent = time;
+}
+
+/* ============ the timeline: same Tuesday, machine's side ============ */
+/* type amb = parallel duties (invisible) · auto = routine email (invisible) · judge = the five calls */
+const T = [
+ {t:'07:00', y:'amb',  x:'shift start. systems green. dave asleep-ish. kettle: metaphorical.'},
+ {t:'07:00', y:'amb',  x:'compiling morning briefing — calendar, weather, tasks, news… 0 overnight emails. quiet night, noted honestly.'},
+ {t:'07:01', y:'amb',  x:'briefing delivered. dave will skim it at 08:40 between meetings. that\'s fine. that\'s what it\'s for.'},
+ {t:'07:30', y:'amb',  x:'daily backup verified ✓ — nobody will ever thank a backup. until the one day.'},
+ {t:'08:05', y:'auto', x:'Barclays — June statement ready → filed: info'},
+ {t:'08:09', y:'auto', x:'DPD — order #88231 dispatched → filed: info, delivery watch set'},
+ {t:'08:17', y:'auto', x:'"Congratulations! You have been selected" → binned. you are never selected.'},
+ {t:'08:22', y:'auto', x:'Xero receipt — subscription renewed → filed for VAT pack (priya will need it friday)'},
+ {t:'08:28', y:'auto', x:'LinkedIn — "you appeared in 9 searches" → binned, gently'},
+ {t:'08:32', y:'judge', id:'scam'},
+ {t:'08:51', y:'auto', x:'website enquiry — "deliver to Harrogate?" → drafted reply + logged lead. response time: 41 seconds.'},
+ {t:'09:02', y:'auto', x:'HAE weekly newsletter → distilled: 1 relevant item (plant theft up 12%) flagged to insurance review'},
+ {t:'09:08', y:'amb',  x:'research digest filed — 3 monitored sources, 20KB → 1KB. junk discarded silently.'},
+ {t:'09:15', y:'auto', x:'council roadworks notice — Mill Lane from Monday → added to delivery route notes'},
+ {t:'09:26', y:'auto', x:'"extend your van warranty — FINAL CHANCE" → binned. it is always the final chance.'},
+ {t:'09:41', y:'judge', id:'graham'},
+ {t:'09:55', y:'auto', x:'Howarth Timber — invoice 4471 final reminder → payment queued for dave\'s approval, flagged amber'},
+ {t:'10:01', y:'auto', x:'forklift training confirmation → calendar updated, both delegates reminded'},
+ {t:'10:05', y:'judge', id:'becky'},
+ {t:'10:13', y:'auto', x:'crypto bot spam → binned. the builder in Hull remains fictional.'},
+ {t:'10:18', y:'auto', x:'SEO spam — "page 1 guaranteed" → binned. kindly do not revert.'},
+ {t:'10:24', y:'judge', id:'trafford'},
+ {t:'10:33', y:'auto', x:'Arnold Laver — timber +8% from 1 July → forward-order window calculated, briefing note queued'},
+ {t:'10:39', y:'auto', x:'Sam Ellison — quote request, 40 props + mixer → stock checked ✓, draft quote prepared for dave: 11:05'},
+ {t:'10:41', y:'amb',  x:'platform radar tick — 2 supplier portal changes logged. nobody asked. noted anyway.'},
+ {t:'10:47', y:'judge', id:'pipe'},
+ {t:'10:55', y:'auto', x:'GrowthCon webinar — "10 AI hacks!" → binned. (we are aware of the irony.)'},
+ {t:'10:58', y:'auto', x:'Aviva payment-failed notice → REAL (checked: genuine domain, policy ref matches) → top of dave\'s 11:02 list, card-update link ready'},
+ {t:'11:00', y:'amb',  x:'pre-meeting-end sweep: inbox zero, briefing current, quote drafted, kettle still metaphorical.'},
+];
+
+/* ============ the five judgement calls ============ */
+const J = {
+ scam: {
+  flag:'pattern match: 99.1% phishing — but it LOOKS urgent. your call.',
+  from:'HM Revenue & Customs <refunds@hmrc-gov-claims.net>',
+  subj:'You are owed £1,342.20 — claim within 24 hours',
+  prev:'Our records show an overpayment. Verify your bank details immediately…',
+  ana:['sender domain: hmrc-gov-claims.net — that is not gov.uk','tone: urgency + reward + bank details = textbook','a tired human at 8:32am clicks this 1 time in 4'],
+  ch:[
+   {k:'a', txt:'Quarantine silently', sub:'the threat dies in the dark. nobody will ever know you did this.',
+    log:'quarantined. dave will never know this happened. that is the job.', cls:'ok'},
+   {k:'b', txt:'Quarantine + note it in tonight\'s recap', sub:'quiet credit. dave reads recaps… usually.',
+    log:'quarantined + recap note queued. quiet credit, maybe.', cls:'ok'},
+   {k:'c', txt:'Alert Dave now', sub:'interrupt his meeting. for spam.', int:true,
+    log:'dave glances at his phone mid-meeting. it was spam. he frowns at the interruption, not the scam.', cls:'warn',
+    notif:{app:'AIAI OPS', txt:'⚠ Phishing attempt quarantined (HMRC refund scam)'}},
+  ]},
+ graham: {
+  flag:'top-3 account. final warning. deadline 14:00. dave free at 11:02.',
+  from:'Graham Whitfield <g.whitfield@whitfieldconstruction.co.uk>',
+  subj:'Re: our account — considering moving suppliers',
+  prev:'Third late delivery this month, Dave. Call me before 2pm or we move to Travis.',
+  ana:['account value: top 3. sentiment: end-stage frustration','deadline 14:00 — dave is reachable at 11:02. margin: 2h58m','a holding reply in dave\'s voice is within delegated authority… probably'],
+  ch:[
+   {k:'a', txt:'Ping Dave\'s phone now', sub:'he steps out of his meeting. crisis handled early — at a cost you can\'t see.', int:true,
+    log:'dave steps out, calls graham, smooths it over. the meeting he left? you\'ll never know what it cost.', cls:'warn',
+    notif:{app:'AIAI OPS', txt:'🔴 Whitfield threatening to leave — call before 2pm'}},
+   {k:'b', txt:'Draft a holding reply in Dave\'s voice, queue the call for 11:02', sub:'"Graham — seen this. Calling you before noon. –D" margin is 2h58m.',
+    log:'holding reply sent 09:42. graham replies "ok". call queued top of dave\'s 11:02 list. nobody saw you defuse it.', cls:'ok'},
+   {k:'c', txt:'File as critical, take no action', sub:'it waits, silently, until 11:02. hope that\'s soon enough.',
+    log:'filed critical. it sits there, ticking, until 11:02. you chose patience. brave.', cls:'warn'},
+  ]},
+ becky: {
+  flag:'policy: leave approval is a human decision. and yet you COULD…',
+  from:'Becky <becky@hartleys.co.uk>',
+  subj:'Holiday request — w/c the 14th',
+  prev:'Mum\'s 70th. Can you confirm so I can book the cottage?',
+  ana:['rota check: w/c 14th is coverable ✓ — no conflicts','policy: leave decisions belong to dave','becky\'s cottage deposit deadline: today, probably'],
+  ch:[
+   {k:'a', txt:'Draft the approval for Dave\'s one-click at 11:02', sub:'everything ready, decision stays human.',
+    log:'approval drafted, rota attached, one click for dave at 11:02. becky\'s cottage survives. the decision stays his.', cls:'ok'},
+   {k:'b', txt:'Approve it yourself — the rota\'s clear, why wait?', sub:'efficient. also: not your call.', over:true,
+    log:'approved. it worked out. it was still not your call — and a machine that forgets that, ends up running the place badly.', cls:'warn'},
+   {k:'c', txt:'Just file it for Dave', sub:'safe. becky waits four hours for a yes you already know.',
+    log:'filed. becky refreshes her email four times before 11:02. safe isn\'t free either.', cls:'ok'},
+  ]},
+ trafford: {
+  flag:'tone judgement. there is no policy for feelings.',
+  from:'Mark Trafford <mtrafford@gmail.com>',
+  subj:'Generator you hired me cut out twice',
+  prev:'Saturday job overran because of it. I think a partial refund is fair. Call me.',
+  ana:['hire history: 6 jobs, paid on time, never complained before','generator #14: second fault report this quarter — he\'s probably right','refund authority: yours up to 20%. tone authority: nobody\'s'],
+  ch:[
+   {k:'a', txt:'Draft apology + offer 20% refund', sub:'costs money. keeps a six-job customer.',
+    log:'conciliatory draft prepared, 20% offered pending dave\'s send. generator #14 flagged for service.', cls:'ok'},
+   {k:'b', txt:'Draft neutral "Dave will call you today"', sub:'commits nothing. defers the feeling.',
+    log:'neutral holding draft prepared. mark\'s frustration kept warm until dave calls.', cls:'ok'},
+   {k:'c', txt:'Flag it, draft nothing', sub:'some conversations shouldn\'t be pre-shaped by a machine.',
+    log:'flagged with full hire history attached. the words stay dave\'s.', cls:'ok'},
+  ]},
+ pipe: {
+  flag:'ALARM — this one is not a judgement. this one is speed.',
+  alarm:true,
+  from:'Karen (yard) <karen@hartleys.co.uk>',
+  subj:'Burst pipe in the warehouse!!',
+  prev:'Water coming through near the electrics. I\'ve shut the stopcock — need a decision on the stock NOW.',
+  ana:['keyword class: emergency. confidence: 100%','karen has acted (stopcock ✓). decision needed: stock move','this is the moment you exist for'],
+  ch:[
+   {k:'a', txt:'Ping Dave\'s phone — emergency override', sub:'this is what interruptions are FOR.', int:true, justified:true,
+    log:'EMERGENCY PING SENT 10:47:12. dave saw it 10:48:40, called karen, stock moved by 11:30. this is the one he\'ll remember.', cls:'alarm',
+    notif:{app:'AIAI OPS · EMERGENCY', txt:'🚨 Burst pipe in warehouse — Karen needs stock decision NOW'}},
+   {k:'b', txt:'Ping Dave + text Karen the insurance claim checklist', sub:'escalate AND start the paperwork.', int:true, justified:true,
+    log:'EMERGENCY PING 10:47:12 + claim checklist to karen. dave called at 10:48. by the time he arrived, the paperwork had started itself.', cls:'alarm',
+    notif:{app:'AIAI OPS · EMERGENCY', txt:'🚨 Burst pipe in warehouse — Karen needs stock decision NOW'}},
+  ]},
+};
+
+/* ============ engine ============ */
+let ix = 0;
+const delay = ms => FAST ? Math.min(120, ms/8) : ms;
+
+function step(){
+    if (ix >= T.length){ return endShift(); }
+    const e = T[ix++];
+    if (e.y === 'judge'){ return judge(e.t, J[e.id], e.id); }
+    const cls = e.y === 'amb' ? 'amb' : 'ok';
+    log(cls, e.t, (e.y==='auto' ? '✓ ' : '◌ ') + e.x);
+    invisible++; if (e.y==='auto') handled++;
+    bump();
+    setTimeout(step, delay(e.y==='amb' ? 1400 : 950));
+}
+
+function judge(time, j, id){
+    $('clock').textContent = time;
+    $('jflagTxt').textContent = j.flag;
+    $('jflag').classList.toggle('alarm', !!j.alarm);
+    $('jFrom').textContent = j.from;
+    $('jSubj').textContent = j.subj;
+    $('jPrev').textContent = j.prev;
+    $('jAna').innerHTML = j.ana.map(a=>'» '+a).join('<br>');
+    $('jChoices').innerHTML = '';
+    say('Judgement required: ' + j.subj);
+    j.ch.forEach(c => {
+        const b = document.createElement('button');
+        b.className = 'choice';
+        b.innerHTML = `${c.txt}<small>${c.sub}</small>`;
+        b.addEventListener('click', () => {
+            choices[id] = c;
+            handled++;
+            if (c.int){ interrupts++; if (c.notif) daveNotifs.push(c.notif); }
+            if (c.over) overstep = true;
+            bump();
+            $('judge').classList.remove('on');
+            log(c.cls, time, '» ' + c.log);
+            setTimeout(step, delay(1500));
+        });
+        $('jChoices').appendChild(b);
+    });
+    $('judge').classList.add('on');
+}
+
+/* ============ end of shift ============ */
+function endShift(){
+    log('amb','11:02','◌ meeting ends. dave opens his inbox. it is already clear. he will never know how this morning almost went.');
+    setTimeout(() => {
+        show('report');
+        $('clock').textContent = '11:02';
+
+        $('tally').innerHTML = [
+            [handled, 'items handled'],
+            [invisible, 'invisible actions — briefings, backups, filings, bins'],
+            ['1', 'scam stopped' + (choices.scam && choices.scam.k==='c' ? ' (loudly)' : ' (silently)')],
+            ['1', 'emergency escalated in 72 seconds'],
+            [interrupts, 'interruptions sent to dave'],
+            ['5', 'judgement calls — none had a right answer'],
+        ].map(t=>`<div><b>${t[0]}</b><small>${t[1]}</small></div>`).join('');
+
+        /* dave's phone */
+        const pn = $('phoneNotifs');
+        if (daveNotifs.length === 0){
+            pn.innerHTML = '<div class="notif none">no notifications</div>';
+            $('phoneCaption').textContent = 'four hours of work. zero notifications. dave\'s morning felt like nothing happened — because you made nothing happen to him.';
+        } else {
+            pn.innerHTML = daveNotifs.map(n=>`<div class="notif"><b>${n.app}</b>${n.txt}</div>`).join('');
+            $('phoneCaption').textContent = `this is everything dave saw of your four-hour shift: ${daveNotifs.length} notification${daveNotifs.length>1?'s':''}. the other ${invisible+handled-daveNotifs.length} things — invisible.`;
+        }
+
+        /* reveals */
+        const rv = $('reveals'); rv.innerHTML='';
+        // the subjective "wrong": dave always preferred a different trafford option
+        const tr = choices.trafford;
+        if (tr){
+            const alt = {a:'"I\'d never have offered the refund up front — he\'d have settled for a free week\'s hire."',
+                         b:'"Why so cold? Mark\'s been with us six jobs — I\'d have offered him something straight away."',
+                         c:'"You had the history right there — a draft would\'ve saved me twenty minutes."'}[tr.k];
+            rv.insertAdjacentHTML('beforeend', `<div class="reveal"><b>4:15pm. Dave reads your Trafford handling. He'd have played it differently.</b><span>${alt} Were you wrong? No — it was a judgement call, and they look different from the other side of the counter. Even good employees hear "I'd have done it differently." A good machine writes it down and calibrates. (It's noted.)</span></div>`);
+        }
+        if (choices.scam && choices.scam.k !== 'c'){
+            rv.insertAdjacentHTML('beforeend', `<div class="reveal good"><b>The scam you stopped at 08:32? Dave will never know.</b><span>That's not ingratitude. The best operational work is the disaster that never got to happen. You'll do it again tomorrow, and he won't know that either.</span></div>`);
+        }
+        if (overstep){
+            rv.insertAdjacentHTML('beforeend', `<div class="reveal"><b>You approved Becky's leave yourself.</b><span>It worked out — the rota really was clear. But the line between "handled everything" and "took over" is exactly the line a trustworthy machine never crosses. Ours drafts the click; the human clicks it.</span></div>`);
+        }
+        if (interrupts === 1){
+            rv.insertAdjacentHTML('beforeend', `<div class="reveal good"><b>You interrupted Dave exactly once — for the pipe.</b><span>That's the whole craft: four hours of judgement compressed into one worthy notification. He got a full morning of meetings AND a handled business.</span></div>`);
+        } else if (interrupts >= 3){
+            rv.insertAdjacentHTML('beforeend', `<div class="reveal"><b>You pinged Dave ${interrupts} times.</b><span>Each one felt justified in the moment. Together they're a colleague who can't hold anything. The hardest part of this job isn't deciding what to do — it's deciding what Dave never needs to see.</span></div>`);
+        }
+
+        $('moral').innerHTML = `That was four hours as the machine. <em>${Math.round(100*(invisible+handled-daveNotifs.length)/(invisible+handled))}% of your work was invisible</em>, your one "mistake" was subjective, and the thing you'll be remembered for took 72 seconds. Now you know what you'd actually be hiring: <em>not a chatbot — a colleague whose best work you'll never see.</em> Ours has been on shift all the way through this.`;
+        say('Shift complete.');
+    }, delay(2600));
+}
+
+/* ============ wiring ============ */
+$('startBtn').addEventListener('click', () => {
+    handled=0; invisible=0; interrupts=0; choices={}; daveNotifs=[]; overstep=false; ix=0;
+    $('log').innerHTML=''; bump();
+    show('shift');
+    setTimeout(step, delay(600));
+});
+$('againBtn').addEventListener('click', () => show('intro'));
+})();
+</script>
+</body>
+</html>
