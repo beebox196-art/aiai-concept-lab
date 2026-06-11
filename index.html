@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIAI — Website Concept Lab | 4 Variations</title>
+<link rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0e1118;--card:#151a24;--ink:#e9edf4;--dim:#8b97a8;--hair:rgba(139,151,168,.16)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.65;min-height:100vh;padding:4rem 1.4rem 5rem}
+.wrap{max-width:980px;margin:0 auto}
+.mono{font-family:'JetBrains Mono',monospace}
+h1{font-family:'Inter Tight';font-size:clamp(2rem,5.5vw,3.2rem);letter-spacing:-.02em;line-height:1.1;margin:.8rem 0 1rem}
+.kicker{font-family:'JetBrains Mono';font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:#ffb454}
+.lead{color:var(--dim);max-width:42rem;margin-bottom:3rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.2rem}
+a.card{
+    display:block;background:var(--card);border:1px solid var(--hair);border-radius:16px;
+    padding:1.8rem;text-decoration:none;color:var(--ink);
+    transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease;position:relative;overflow:hidden;
+}
+a.card:hover{transform:translateY(-5px);box-shadow:0 24px 60px -30px rgba(0,0,0,.8)}
+a.card .num{font-family:'JetBrains Mono';font-size:.7rem;letter-spacing:.16em;margin-bottom:.9rem;display:block}
+a.card h2{font-family:'Inter Tight';font-size:1.35rem;letter-spacing:-.01em;margin-bottom:.6rem}
+a.card p{font-size:.9rem;color:var(--dim)}
+a.card .go{display:inline-block;margin-top:1.1rem;font-family:'JetBrains Mono';font-size:.74rem}
+a.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.c1::before{background:linear-gradient(90deg,#1a2332,#7c9a6e,#b59a3a)} .c1:hover{border-color:#7c9a6e} .c1 .num,.c1 .go{color:#a3bc96}
+.c2::before{background:linear-gradient(90deg,#46e3c3,#7b6cff)} .c2:hover{border-color:#46e3c3} .c2 .num,.c2 .go{color:#46e3c3}
+.c2a::before{background:linear-gradient(90deg,#ff7e5f,#f0a84b,#8b5cf6)} .c2a:hover{border-color:#ff7e5f} .c2a .num,.c2a .go{color:#ff9d7a}
+.c2b::before{background:linear-gradient(90deg,#5eead4,#f9a8d4,#fcd34d)} .c2b:hover{border-color:#f9a8d4} .c2b .num,.c2b .go{color:#f9a8d4}
+.c3::before{background:#2b4bff} .c3:hover{border-color:#2b4bff} .c3 .num,.c3 .go{color:#7c93ff}
+.c4::before{background:linear-gradient(90deg,#ffb454,#5df2a6)} .c4:hover{border-color:#ffb454} .c4 .num,.c4 .go{color:#ffb454}
+.c4a::before{background:linear-gradient(90deg,#ffb454,#ff9d7a,#b59df5)} .c4a:hover{border-color:#ff9d7a} .c4a .num,.c4a .go{color:#ff9d7a}
+.c5{grid-column:1/-1;background:linear-gradient(160deg,#13211c,#151a24)}
+.c5::before{background:linear-gradient(90deg,#6ee7a8,#ffc06e,#f6a8c8)} .c5:hover{border-color:#6ee7a8} .c5 .num,.c5 .go{color:#6ee7a8}
+.c5 h2{font-size:1.7rem}
+.foot{margin-top:3.5rem;font-size:.78rem;color:var(--dim);font-family:'JetBrains Mono'}
+.foot a{color:#ffb454;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+    <span class="kicker">adventures in ai · concept lab · june 2026</span>
+    <h1>One brand. Four ways to wear it.</h1>
+    <p class="lead">Standalone concept builds for adventuresinai.co.uk, created by Claude (Fable 5): four core directions, plus two colour-mood variants of the Organism. Same verified facts, same business — radically different presentation. Each opens as a complete one-page experience; none touch the live site.</p>
+    <div class="grid">
+        <a class="card c1" href="site-1-spectrum/index.html">
+            <span class="num">CONCEPT 1 — SAFE EVOLUTION</span>
+            <h2>Full Spectrum</h2>
+            <p>The current look and feel, kept. The words and structure, rebuilt — three audience doors so a sole trader and a corporate director each see themselves within one scroll.</p>
+            <span class="go">open concept →</span>
+        </a>
+        <a class="card c2" href="site-2-organism/index.html">
+            <span class="num">CONCEPT 2 — THE LIVING SITE</span>
+            <h2>The Organism</h2>
+            <p>A bioluminescent neural field that senses your cursor, breathes, and wakes section by section. The site behaves like the thing being sold: a living system.</p>
+            <span class="go">open concept →</span>
+        </a>
+        <a class="card c2a" href="site-2a-organism-daybreak/index.html">
+            <span class="num">CONCEPT 2A — ORGANISM · DAYBREAK</span>
+            <h2>The Organism, in Daylight</h2>
+            <p>The same living field, warmed up: flowing watercolour blooms of coral, lavender, sky and butter drift behind a cream page. Friendly, optimistic, still alive.</p>
+            <span class="go">open concept →</span>
+        </a>
+        <a class="card c2b" href="site-2b-organism-aurora/index.html">
+            <span class="num">CONCEPT 2B — ORGANISM · AURORA</span>
+            <h2>The Organism, Under the Lights</h2>
+            <p>A soft twilight sky with northern-lights ribbons of teal, pink and gold rippling continuously behind the neural field. Gentler than the abyss, still magical.</p>
+            <span class="go">open concept →</span>
+        </a>
+        <a class="card c3" href="site-3-clarity/index.html">
+            <span class="num">CONCEPT 3 — RADICAL SIMPLICITY</span>
+            <h2>Clarity</h2>
+            <p>Current design trends, properly applied: one accent, big type, bento grid, accordion answers, a pill nav. Nothing between the visitor and the point.</p>
+            <span class="go">open concept →</span>
+        </a>
+        <a class="card c4" href="site-4-machine/index.html">
+            <span class="num">CONCEPT 4 — THE WILDCARD</span>
+            <h2>The Machine That Builds It</h2>
+            <p>The page assembles itself in front of you while the agent team's ops feed narrates. You don't read about the product — you watch it work. The medium is the proof.</p>
+            <span class="go">open concept →</span>
+        </a>
+        <a class="card c4a" href="site-4a-machine-workshop/index.html">
+            <span class="num">CONCEPT 4A — MACHINE · OPEN WORKSHOP</span>
+            <h2>The Machine, Door Open</h2>
+            <p>The same self-assembling page in a warm workshop: drifting blueprint grid, breathing pools of lamplight, and rising embers that greet your cursor like moths to a lamp. Welcoming, still working.</p>
+            <span class="go">open concept →</span>
+        </a>
+        <a class="card c5" href="site-5-greenhouse/index.html">
+            <span class="num">FINALE — ORGANISM × MACHINE</span>
+            <h2>The Greenhouse</h2>
+            <p>The synthesis: a built structure that exists to keep living things growing. The page germinates instead of booting, sections bloom from seed-outlines into glass panels, a vine grows down the page as you scroll and sprouts a node at every section, fireflies drift toward your cursor, and the crew narrates from the potting bench. Audit → Build → Review → Transfer becomes Sow → Grow → Prune → Harvest.</p>
+            <span class="go">enter the greenhouse →</span>
+        </a>
+    </div>
+    <p class="foot">all four are self-contained · live site untouched · <a href="https://adventuresinai.co.uk">adventuresinai.co.uk</a></p>
+</div>
+</body>
+</html>

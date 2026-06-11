@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIAI — Concept 3: Clarity | AI, Minus the Noise</title>
+<meta name="description" content="Variation 3 of 4 — radical simplicity: one accent, big type, short words, nothing between the visitor and the point.">
+<link rel="icon" type="image/x-icon" href="../assets/img/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+    --paper:#fafaf7;
+    --ink:#16181d;
+    --soft:#5d636e;
+    --hair:#e7e6e1;
+    --accent:#2b4bff;
+    --accent-ink:#1d36c4;
+    --card:#ffffff;
+    --radius:20px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3,.display{font-family:'Inter Tight',sans-serif;letter-spacing:-.025em;line-height:1.06}
+a{color:inherit}
+::selection{background:var(--accent);color:#fff}
+.wrap{max-width:1060px;margin:0 auto;padding:0 1.4rem}
+
+/* reveal */
+.up{opacity:0;transform:translateY(16px);transition:opacity .55s ease,transform .55s ease}
+.up.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.up{opacity:1;transform:none;transition:none}}
+
+/* ---- pill nav ---- */
+.nav{
+    position:fixed;top:1rem;left:50%;transform:translateX(-50%);z-index:50;
+    display:flex;align-items:center;gap:.25rem;
+    background:rgba(255,255,255,.82);backdrop-filter:blur(14px);
+    border:1px solid var(--hair);border-radius:999px;padding:.4rem .5rem;
+    box-shadow:0 8px 30px -16px rgba(22,24,29,.25);
+    max-width:calc(100vw - 2rem);
+}
+.nav a{
+    text-decoration:none;font-size:.85rem;font-weight:500;color:var(--soft);
+    padding:.45rem .85rem;border-radius:999px;transition:color .2s,background .2s;white-space:nowrap;
+}
+.nav a:hover{color:var(--ink);background:#f0efe9}
+.nav a.cta{background:var(--ink);color:#fff;font-weight:600}
+.nav a.cta:hover{background:var(--accent)}
+.nav .brand{font-family:'Inter Tight';font-weight:800;color:var(--ink);font-size:.95rem;padding:.45rem .7rem .45rem .85rem}
+.nav .brand span{color:var(--accent)}
+@media(max-width:680px){.nav a:not(.cta):not(.brand){display:none}}
+
+/* ---- hero ---- */
+.hero{padding:9.5rem 0 5rem;text-align:left}
+.hero h1{font-size:clamp(2.7rem,8vw,5.6rem);font-weight:800;max-width:13ch}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p{margin-top:1.6rem;font-size:1.15rem;color:var(--soft);max-width:36rem}
+.hero .row{margin-top:2.4rem;display:flex;gap:.9rem;flex-wrap:wrap;align-items:center}
+.btn{
+    display:inline-flex;align-items:center;gap:.55rem;text-decoration:none;
+    font-weight:600;font-size:.95rem;border-radius:999px;padding:.9rem 1.7rem;
+    transition:transform .2s ease,background .2s ease,box-shadow .2s ease;
+}
+.btn:active{transform:scale(.97)}
+.btn-ink{background:var(--ink);color:#fff}
+.btn-ink:hover{background:var(--accent);box-shadow:0 10px 30px -12px rgba(43,75,255,.55)}
+.btn-line{border:1.5px solid var(--hair);color:var(--ink);background:var(--card)}
+.btn-line:hover{border-color:var(--ink)}
+.hero .micro{margin-top:2.2rem;font-size:.85rem;color:var(--soft);display:flex;gap:1.6rem;flex-wrap:wrap}
+.hero .micro b{color:var(--ink);font-weight:600}
+
+/* ---- section scaffold ---- */
+section{padding:4.5rem 0}
+.kicker{font-size:.8rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:.9rem}
+h2{font-size:clamp(1.8rem,4.5vw,2.8rem);font-weight:800;max-width:24ch}
+.lead{margin-top:1rem;color:var(--soft);max-width:34rem}
+
+/* ---- bento ---- */
+.bento{display:grid;gap:1rem;margin-top:2.6rem;grid-template-columns:repeat(6,1fr)}
+.tile{
+    background:var(--card);border:1px solid var(--hair);border-radius:var(--radius);
+    padding:1.8rem;transition:transform .25s ease,box-shadow .25s ease;
+}
+.tile:hover{transform:translateY(-3px);box-shadow:0 18px 44px -28px rgba(22,24,29,.28)}
+.tile h3{font-size:1.12rem;font-weight:700;margin-bottom:.55rem}
+.tile p{font-size:.93rem;color:var(--soft)}
+.tile .big{font-family:'Inter Tight';font-size:3.2rem;font-weight:800;line-height:1;letter-spacing:-.03em}
+.tile.s-4{grid-column:span 4}
+.tile.s-2{grid-column:span 2}
+.tile.s-3{grid-column:span 3}
+.tile.s-6{grid-column:span 6}
+.tile.accent{background:var(--accent);border-color:var(--accent);color:#fff}
+.tile.accent p{color:rgba(255,255,255,.75)}
+.tile.ink{background:var(--ink);border-color:var(--ink);color:#fff}
+.tile.ink p{color:rgba(255,255,255,.65)}
+.tile .src{display:block;margin-top:.8rem;font-size:.72rem;color:inherit;opacity:.55}
+.live{display:inline-flex;align-items:center;gap:.45rem;font-size:.78rem;font-weight:600;color:#1d9e6f;background:#e7f6ef;border-radius:999px;padding:.25rem .7rem;margin-bottom:.9rem}
+.live i{width:7px;height:7px;border-radius:50%;background:#1d9e6f;animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+.tile.accent .live{background:rgba(255,255,255,.16);color:#fff}
+.tile.accent .live i{background:#fff}
+@media(max-width:760px){.bento{grid-template-columns:1fr}.tile{grid-column:span 1!important}}
+
+/* ---- steps ---- */
+.steps{margin-top:2.6rem;counter-reset:step;display:grid;gap:0;border-top:1px solid var(--hair)}
+.step{
+    counter-increment:step;display:grid;grid-template-columns:4.5rem 1fr;gap:1.4rem;
+    padding:2rem 0;border-bottom:1px solid var(--hair);align-items:baseline;
+}
+.step::before{
+    content:"0" counter(step);font-family:'Inter Tight';font-weight:800;font-size:1.6rem;color:var(--accent);
+}
+.step h3{font-size:1.25rem;font-weight:700;margin-bottom:.4rem}
+.step p{color:var(--soft);max-width:44rem}
+@media(max-width:560px){.step{grid-template-columns:1fr;gap:.4rem}}
+
+/* ---- service rows ---- */
+.rows{margin-top:2.6rem;border-top:1px solid var(--hair)}
+.row-item{
+    display:grid;grid-template-columns:1fr 2fr auto;gap:1.5rem;align-items:center;
+    padding:1.7rem 0;border-bottom:1px solid var(--hair);text-decoration:none;
+    transition:padding-left .25s ease;
+}
+.row-item:hover{padding-left:.8rem}
+.row-item h3{font-size:1.3rem;font-weight:700}
+.row-item small{display:block;font-size:.8rem;color:var(--accent);font-weight:600;margin-top:.2rem}
+.row-item p{font-size:.93rem;color:var(--soft)}
+.row-item .arrow{
+    width:42px;height:42px;border-radius:50%;border:1.5px solid var(--hair);
+    display:flex;align-items:center;justify-content:center;transition:all .25s ease;flex-shrink:0;
+}
+.row-item:hover .arrow{background:var(--ink);border-color:var(--ink);color:#fff;transform:rotate(-45deg)}
+@media(max-width:700px){.row-item{grid-template-columns:1fr auto}.row-item p{display:none}}
+
+/* ---- accordion ---- */
+.acc{margin-top:2.6rem;border-top:1px solid var(--hair)}
+.acc details{border-bottom:1px solid var(--hair)}
+.acc summary{
+    cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;
+    padding:1.5rem 0;font-family:'Inter Tight';font-weight:700;font-size:1.1rem;gap:1rem;
+}
+.acc summary::-webkit-details-marker{display:none}
+.acc summary .plus{
+    width:30px;height:30px;border-radius:50%;border:1.5px solid var(--hair);flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-weight:500;font-size:1.1rem;color:var(--soft);
+    transition:transform .25s ease,background .25s,color .25s,border-color .25s;
+}
+.acc details[open] .plus{transform:rotate(45deg);background:var(--accent);border-color:var(--accent);color:#fff}
+.acc .body{padding:0 0 1.6rem;color:var(--soft);max-width:46rem}
+
+/* ---- closing ---- */
+.close{padding:6rem 0 5rem;text-align:center}
+.close h2{margin:0 auto;max-width:18ch}
+.close p{margin:1.2rem auto 2.2rem;color:var(--soft);max-width:30rem}
+
+footer{border-top:1px solid var(--hair);padding:2rem 0 5.5rem}
+footer .wrap{display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:center}
+footer p{font-size:.8rem;color:var(--soft)}
+footer .brand{font-family:'Inter Tight';font-weight:800}
+footer .brand span{color:var(--accent)}
+footer a{color:var(--accent);text-decoration:none}
+
+/* mobile sticky CTA */
+.thumb{
+    position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);z-index:50;display:none;
+}
+@media(max-width:680px){.thumb{display:block}}
+.thumb a{box-shadow:0 14px 40px -12px rgba(22,24,29,.45)}
+
+.concept-tag{
+    position:fixed;bottom:1.1rem;right:1.1rem;z-index:60;text-decoration:none;
+    font-size:.72rem;font-weight:600;color:var(--soft);
+    background:var(--card);border:1px solid var(--hair);border-radius:999px;padding:.45rem .9rem;
+}
+.concept-tag b{color:var(--accent)}
+</style>
+</head>
+<body>
+
+<nav class="nav" aria-label="Main">
+    <a class="brand" href="#top">AI<span>AI</span></a>
+    <a href="#why">Why</a>
+    <a href="#proof">Proof</a>
+    <a href="#how">How</a>
+    <a href="#what">Services</a>
+    <a href="#faq">Questions</a>
+    <a class="cta" href="https://adventuresinai.co.uk/contact.html">Talk to us</a>
+</nav>
+
+<a class="concept-tag" href="../index.html"><b>3/4</b> · Clarity</a>
+
+<header class="hero wrap" id="top">
+    <h1 class="up in">AI for your business. <em>Minus the noise.</em></h1>
+    <p class="up in">No jargon, no platform lock-in, no leap of faith. We run our own business on an autonomous AI team — then build the same thing, sized for yours.</p>
+    <div class="row up in">
+        <a class="btn btn-ink" href="https://adventuresinai.co.uk/contact.html">Start a conversation</a>
+        <a class="btn btn-line" href="#proof">See it running →</a>
+    </div>
+    <div class="micro up in">
+        <span><b>Proof first</b> — see our systems before you commit</span>
+        <span><b>You own it</b> — everything we build transfers to you</span>
+        <span><b>Yorkshire, UK</b> — plain English guaranteed</span>
+    </div>
+</header>
+
+<!-- WHY -->
+<section id="why">
+    <div class="wrap">
+        <p class="kicker up">Why this matters</p>
+        <h2 class="up">Most AI projects fail. Ours run every day.</h2>
+        <p class="lead up">The numbers behind the hype are brutal — and they're exactly why we work the way we do.</p>
+        <div class="bento">
+            <div class="tile ink s-2 up"><div class="big">95%</div><p>of enterprise AI pilots delivered zero measurable value<span class="src">MIT NANDA</span></p></div>
+            <div class="tile s-2 up"><div class="big">80%</div><p>of UK businesses aren't using AI meaningfully<span class="src">DSIT UK AI Adoption Research</span></p></div>
+            <div class="tile s-2 up"><div class="big">£78B</div><p>foregone potential from the UK adoption gap<span class="src">DSIT</span></p></div>
+            <div class="tile accent s-3 up">
+                <h3>The failure isn't the technology. It's the approach.</h3>
+                <p>Pilots fail when they start from a vendor's slide deck instead of a business's reality. We start from one expensive problem you actually have — and prove the fix before asking for more.</p>
+            </div>
+            <div class="tile s-3 up">
+                <h3>Renting isn't owning.</h3>
+                <p>Copilot reached 3.3% user adoption — because a rented assistant isn't a capability. Everything we build runs on your infrastructure and transfers to you. No landlord, no surprise bills, no lock-in.</p>
+                <span class="src">Yahoo Finance</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- PROOF -->
+<section id="proof">
+    <div class="wrap">
+        <p class="kicker up">Proof, not promises</p>
+        <h2 class="up">Our own business runs on this.</h2>
+        <p class="lead up">Six AI agents handle our research, development, design, review and operations. A sample of what's running right now:</p>
+        <div class="bento">
+            <div class="tile s-2 up">
+                <span class="live"><i></i> every 30 min</span>
+                <h3>Email triage</h3>
+                <p>Every inbound message sorted — critical, action, info, noise — with escalation when a human is needed.</p>
+            </div>
+            <div class="tile s-2 up">
+                <span class="live"><i></i> twice daily</span>
+                <h3>Operational briefings</h3>
+                <p>Morning briefing and evening recap, generated automatically. Calendar, email digest, tasks, news that matters.</p>
+            </div>
+            <div class="tile s-2 up">
+                <span class="live"><i></i> Sundays 3am</span>
+                <h3>Weekly synthesis</h3>
+                <p>Every source — research, email, platform updates — cross-connected into one prioritised action briefing.</p>
+            </div>
+            <div class="tile s-6 up">
+                <h3>Six case studies, written honestly.</h3>
+                <p>"Can AI build a real app?" · "The Machine That Runs Itself" · 70 companies profiled in under 2 hours for an external client · a live decision-by-decision build log. Wins and failures both — a case study that hides the crisis is just an advert. <a href="https://adventuresinai.co.uk/case-studies.html" style="color:var(--accent);font-weight:600;text-decoration:none">Read them →</a></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- HOW -->
+<section id="how">
+    <div class="wrap">
+        <p class="kicker up">How it works</p>
+        <h2 class="up">Three steps. Each one earns the next.</h2>
+        <div class="steps">
+            <div class="step up"><div><h3>Audit</h3><p>One conversation about where your business actually is — tools, processes, costs, gaps. We find the one expensive problem worth solving first. If AI can't earn its keep there, we'll say so.</p></div></div>
+            <div class="step up"><div><h3>Build</h3><p>A focused system against that one problem, proven in your environment with your data. The first engagement is designed to cost less than the value it delivers. If it doesn't work, you stop.</p></div></div>
+            <div class="step up"><div><h3>Scale</h3><p>The proven pattern spreads across your operations, and we transfer the knowledge so your team runs it without us. You renew because it works — never because leaving hurts.</p></div></div>
+        </div>
+    </div>
+</section>
+
+<!-- WHAT -->
+<section id="what">
+    <div class="wrap">
+        <p class="kicker up">What we do</p>
+        <h2 class="up">Same philosophy. Three sizes.</h2>
+        <div class="rows">
+            <a class="row-item up" href="https://adventuresinai.co.uk/services.html">
+                <div><h3>Quick Wins</h3><small>Small &amp; local businesses</small></div>
+                <p>Email triage, automated reports, marketing and content systems. Set up fast, measurable in days, stop any time.</p>
+                <span class="arrow">→</span>
+            </a>
+            <a class="row-item up" href="https://adventuresinai.co.uk/services.html">
+                <div><h3>AI Adoption</h3><small>Growing businesses</small></div>
+                <p>An AI team configured for your workflows — process mapping, automation, daily operational intelligence. Own the routine.</p>
+                <span class="arrow">→</span>
+            </a>
+            <a class="row-item up" href="https://adventuresinai.co.uk/services.html">
+                <div><h3>Strategic Partnership</h3><small>Larger organisations</small></div>
+                <p>Adoption roadmap, credible pilots that prove ROI before scale, and lessons-learned transfer from operators who run this daily.</p>
+                <span class="arrow">→</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+    <div class="wrap">
+        <p class="kicker up">Fair questions</p>
+        <h2 class="up">Asked by every business we meet.</h2>
+        <div class="acc up">
+            <details>
+                <summary>Is my business too small for this? <span class="plus">+</span></summary>
+                <div class="body">No — and you're the reason we exist. 80% of UK businesses haven't adopted AI meaningfully, mostly because everything on offer was built for enterprises. Our smallest engagements automate one job (the inbox, the reports, the follow-ups) and prove themselves in days.</div>
+            </details>
+            <details>
+                <summary>What happens to our data? <span class="plus">+</span></summary>
+                <div class="body">Where your data is sensitive, the AI runs on your infrastructure — it never leaves your network. 53% of organisations name data privacy as their top AI blocker; we think that's a reason to own your AI rather than rent it from a platform.</div>
+            </details>
+            <details>
+                <summary>We tried ChatGPT. It didn't do much. <span class="plus">+</span></summary>
+                <div class="body">A tool isn't a strategy. Chat sessions help one person, once. We build systems — monitoring, generating, escalating — that run daily without anyone prompting them. That's the difference between dabbling and capability.</div>
+            </details>
+            <details>
+                <summary>What does it cost? <span class="plus">+</span></summary>
+                <div class="body">Our pricing principle is simple: the first engagement should cost less than the value it delivers. We scope that together in the audit — and if the numbers don't work, we'll tell you before you spend anything.</div>
+            </details>
+            <details>
+                <summary>Are we locked in once you build it? <span class="plus">+</span></summary>
+                <div class="body">The opposite. Code, configuration, documentation and training all transfer to you. When we leave, the capability stays. You renew because it works, not because you're stuck.</div>
+            </details>
+        </div>
+    </div>
+</section>
+
+<!-- CLOSE -->
+<section class="close">
+    <div class="wrap">
+        <h2 class="up">Start from where you are.</h2>
+        <p class="up">One conversation, plain English, no pressure. We'll show you our systems running live — then tell you honestly what would work for yours.</p>
+        <div class="up">
+            <a class="btn btn-ink" href="https://adventuresinai.co.uk/contact.html">Talk to us</a>
+            &nbsp;
+            <a class="btn btn-line" href="mailto:hello@adventuresinai.co.uk">hello@adventuresinai.co.uk</a>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="wrap">
+        <span class="brand">AI<span>AI</span> — Adventures in AI</span>
+        <p>Own the routine. Expand your team. Choose your dependencies.</p>
+        <p>Concept 3 of 4 — not the live site. <a href="https://adventuresinai.co.uk">adventuresinai.co.uk</a></p>
+    </div>
+</footer>
+
+<div class="thumb"><a class="btn btn-ink" href="https://adventuresinai.co.uk/contact.html">Talk to us</a></div>
+
+<script>
+const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+}), {threshold:.12});
+document.querySelectorAll('.up').forEach(el => io.observe(el));
+</script>
+</body>
+</html>

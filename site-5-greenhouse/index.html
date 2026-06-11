@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIAI — Finale: The Greenhouse | Where Machines Grow</title>
+<meta name="description" content="The finale — Organism and Machine grown together: a night greenhouse where the page germinates instead of booting, sections bloom from seed-outlines into glass panels, a vine grows down the page as you scroll, and the crew narrates from the potting bench.">
+<link rel="icon" type="image/x-icon" href="../assets/img/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+    --night:#0d1714;
+    --glass:#13211c;
+    --glass-2:#18271f;
+    --pane:rgba(140,200,170,.05);
+    --leaf:#6ee7a8;
+    --leaf-soft:rgba(110,231,168,.55);
+    --amber:#ffc06e;
+    --pollen:#ffe2a0;
+    --rose:#f6a8c8;
+    --ink:#ecf3ee;
+    --dim:#93ab9d;
+    --hair:rgba(147,171,157,.18);
+    --mono:'JetBrains Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+    background:var(--night);color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.65;
+    overflow-x:hidden;cursor:none;
+}
+@media (hover:none), (prefers-reduced-motion:reduce){ body{cursor:auto} .halo{display:none!important} }
+::selection{background:var(--leaf);color:var(--night)}
+h1,h2,h3{font-family:'Space Grotesk',sans-serif;letter-spacing:-.02em;line-height:1.12}
+.mono{font-family:var(--mono)}
+
+/* ================= GREENHOUSE: panes + lamplight + fireflies ================= */
+.panes{
+    position:fixed;inset:-60px;z-index:0;pointer-events:none;
+    background-image:
+        linear-gradient(var(--pane) 1px,transparent 1px),
+        linear-gradient(90deg,var(--pane) 1px,transparent 1px);
+    background-size:52px 52px;
+    animation:paneDrift 90s linear infinite;
+}
+@keyframes paneDrift{from{transform:translate(0,0)}to{transform:translate(52px,52px)}}
+.lamps{position:fixed;inset:0;z-index:0;pointer-events:none;filter:blur(85px) saturate(1.1)}
+.lamps i{position:absolute;border-radius:50%}
+.lamps .l1{width:46vw;height:46vw;background:radial-gradient(circle,rgba(255,192,110,.4),transparent 65%);top:-10%;right:-6%;animation:lampBreathe 12s ease-in-out infinite}
+.lamps .l2{width:44vw;height:44vw;background:radial-gradient(circle,rgba(110,231,168,.3),transparent 65%);bottom:-14%;left:-8%;animation:lampBreathe 15s ease-in-out infinite 4s}
+.lamps .l3{width:30vw;height:30vw;background:radial-gradient(circle,rgba(246,168,200,.22),transparent 65%);top:40%;left:44%;animation:lampBreathe 18s ease-in-out infinite 8s}
+@keyframes lampBreathe{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:.55;transform:scale(1.1)}}
+#fireflies{position:fixed;inset:0;z-index:1;pointer-events:none}
+@media (prefers-reduced-motion:reduce){.panes{animation:none}.lamps i{animation:none}}
+
+/* ================= cursor halo (a cupped hand of light) ================= */
+.halo{
+    position:fixed;width:34px;height:34px;border-radius:50%;
+    border:1.5px solid rgba(255,192,110,.55);
+    z-index:9999;pointer-events:none;transform:translate(-50%,-50%);
+    transition:width .25s,height .25s,border-color .25s,background .25s;
+    mix-blend-mode:screen;animation:haloBreathe 3.4s ease-in-out infinite;
+}
+.halo.touching{width:64px;height:64px;border-color:var(--leaf);background:rgba(110,231,168,.07)}
+@keyframes haloBreathe{0%,100%{box-shadow:0 0 18px 2px rgba(255,192,110,.22)}50%{box-shadow:0 0 34px 6px rgba(255,192,110,.4)}}
+
+/* ================= the growing vine ================= */
+#vinewrap{position:absolute;top:0;left:0;width:60px;z-index:1;pointer-events:none}
+#vinewrap svg{display:block;width:60px;overflow:visible}
+#vinePath{
+    fill:none;stroke:url(#vineGrad);stroke-width:2;stroke-linecap:round;
+    filter:drop-shadow(0 0 6px rgba(110,231,168,.5));
+}
+.vine-node{fill:var(--night);stroke:var(--leaf);stroke-width:2;opacity:0;transition:opacity .6s}
+.vine-node.lit{opacity:1;filter:drop-shadow(0 0 8px var(--leaf-soft))}
+.vine-bud{fill:var(--amber);opacity:0;transition:opacity .6s .25s}
+.vine-bud.lit{opacity:.9;filter:drop-shadow(0 0 10px rgba(255,192,110,.7))}
+@media(max-width:780px){#vinewrap{display:none}}
+
+/* ================= GERMINATION OVERLAY ================= */
+#germ{
+    position:fixed;inset:0;z-index:200;background:var(--night);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.6rem;
+    transition:opacity .9s ease;
+}
+#germ.gone{opacity:0;pointer-events:none}
+.seed{position:relative;width:18px;height:18px}
+.seed .core{
+    position:absolute;inset:0;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,var(--pollen),var(--amber));
+    animation:seedPulse 1.6s ease-in-out infinite;
+    box-shadow:0 0 24px rgba(255,192,110,.8);
+}
+@keyframes seedPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.35)}}
+.seed .ring{
+    position:absolute;top:50%;left:50%;width:18px;height:18px;border-radius:50%;
+    transform:translate(-50%,-50%);border:1px solid rgba(110,231,168,.5);
+    animation:seedRing 2.4s ease-out infinite;
+}
+.seed .ring:nth-child(3){animation-delay:.8s}
+.seed .ring:nth-child(4){animation-delay:1.6s}
+@keyframes seedRing{0%{width:18px;height:18px;opacity:.9}100%{width:170px;height:170px;opacity:0}}
+#germ .term{
+    width:min(560px,92vw);font-family:var(--mono);font-size:clamp(.72rem,2.4vw,.85rem);
+    color:var(--leaf);line-height:2;
+}
+#germ .term .ln{opacity:0;transform:translateY(4px);transition:opacity .25s,transform .25s;white-space:pre-wrap}
+#germ .term .ln.on{opacity:1;transform:none}
+#germ .who-bee{color:var(--amber)} #germ .who-q{color:#b9a8f7}
+#germ .who-mel{color:var(--rose)} #germ .who-kieran{color:#8ed3f7}
+#germ .sys{color:var(--dim)}
+#skip{
+    position:fixed;bottom:1.4rem;right:1.4rem;z-index:201;
+    font-family:var(--mono);font-size:.75rem;color:var(--dim);
+    background:none;border:1px solid var(--hair);border-radius:8px;padding:.5rem 1rem;cursor:pointer;
+    transition:color .2s,border-color .2s;
+}
+#skip:hover{color:var(--amber);border-color:var(--amber)}
+
+/* ================= POTTING-BENCH FEED ================= */
+#dock{
+    position:fixed;right:1rem;bottom:1rem;z-index:90;width:min(360px,calc(100vw - 2rem));
+    background:rgba(19,33,28,.92);border:1px solid var(--hair);border-radius:14px;
+    backdrop-filter:blur(10px);overflow:hidden;
+    box-shadow:0 18px 60px -20px rgba(0,0,0,.6);
+    transition:transform .4s ease;
+}
+#dock.hidden-dock{transform:translateY(calc(100% - 2.6rem))}
+#dock header{
+    display:flex;align-items:center;gap:.6rem;padding:.6rem .9rem;cursor:pointer;
+    font-family:var(--mono);font-size:.72rem;color:var(--dim);border-bottom:1px solid var(--hair);
+    user-select:none;
+}
+#dock header .lamp{width:8px;height:8px;border-radius:50%;background:var(--leaf);animation:lampDot 2.4s ease-in-out infinite}
+@keyframes lampDot{0%,100%{box-shadow:0 0 4px var(--leaf)}50%{box-shadow:0 0 12px var(--leaf)}}
+#dock header .tog{margin-left:auto}
+#feed{height:170px;overflow-y:auto;padding:.7rem .9rem;font-family:var(--mono);font-size:.7rem;line-height:1.8;scrollbar-width:thin}
+#feed div{opacity:0;animation:fin .4s forwards}
+@keyframes fin{to{opacity:1}}
+#feed .t{color:var(--dim);margin-right:.4em}
+#feed .bee{color:var(--amber)} #feed .q{color:#b9a8f7} #feed .mel{color:var(--rose)}
+#feed .gav{color:var(--leaf)} #feed .luna{color:var(--pollen)} #feed .kieran{color:#8ed3f7}
+@media(max-width:700px){#dock{display:none}}
+
+/* ================= LAYOUT ================= */
+.frame{max-width:1080px;margin:0 auto;padding:0 1.4rem;position:relative;z-index:2}
+.bar{
+    position:fixed;top:0;left:0;right:0;z-index:80;
+    display:flex;align-items:center;justify-content:space-between;gap:1rem;
+    padding:.8rem 1.4rem;background:rgba(13,23,20,.86);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--hair);font-family:var(--mono);font-size:.75rem;
+}
+.bar img{height:26px;opacity:.92}
+.bar .crumbs{color:var(--dim);display:flex;gap:1.4rem}
+.bar .crumbs a{color:var(--dim);text-decoration:none;transition:color .2s}
+.bar .crumbs a:hover{color:var(--leaf)}
+.bar .status{display:flex;align-items:center;gap:.5rem;color:var(--leaf)}
+.bar .status i{width:7px;height:7px;border-radius:50%;background:var(--leaf);animation:lampDot 2.4s infinite}
+@media(max-width:840px){.bar .crumbs{display:none}}
+
+/* grown-in modules: seed outline -> glass panel in bloom */
+.module{position:relative;margin:5.5rem auto;border-radius:20px}
+.module::before{
+    content:attr(data-spec);
+    position:absolute;top:-1.45rem;left:.2rem;
+    font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;color:var(--dim);
+    text-transform:uppercase;
+}
+.module .shell{
+    border:1px dashed rgba(110,231,168,.45);border-radius:20px;padding:2.6rem 2.2rem;
+    background:transparent;
+    transition:border-color 1s ease,background 1s ease,box-shadow 1s ease;
+}
+.module .innards{
+    opacity:0;transform:translateY(16px) scale(.99);filter:blur(10px) saturate(.3);
+    transition:opacity .9s ease .3s,transform .9s cubic-bezier(.22,.8,.3,1) .3s,filter 1.3s ease .3s;
+}
+.module.grown .shell{
+    border:1px solid var(--hair);
+    background:linear-gradient(168deg,rgba(24,39,31,.82),rgba(19,33,28,.78));
+    backdrop-filter:blur(7px);
+    box-shadow:0 30px 80px -50px rgba(0,0,0,.7);
+}
+.module.grown .innards{opacity:1;transform:none;filter:none}
+.module .stamp{
+    position:absolute;top:-.9rem;right:1.2rem;
+    font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;
+    color:var(--leaf);border:1px solid var(--leaf);border-radius:6px;padding:.18rem .55rem;
+    background:var(--night);opacity:0;transform:rotate(3deg) scale(1.3);
+    transition:opacity .35s ease 1.05s,transform .35s cubic-bezier(.2,1.6,.4,1) 1.05s;
+}
+.module.grown .stamp{opacity:1;transform:rotate(-2deg) scale(1)}
+@media(prefers-reduced-motion:reduce){
+    .module .shell{border:1px solid var(--hair);background:linear-gradient(168deg,rgba(24,39,31,.82),rgba(19,33,28,.78))}
+    .module .innards{opacity:1;transform:none;filter:none;transition:none}
+    .module .stamp{opacity:1;transform:none;transition:none}
+}
+
+/* typography */
+.tagline-spec{font-family:var(--mono);font-size:.72rem;color:var(--amber);letter-spacing:.16em;text-transform:uppercase;margin-bottom:1rem}
+h2{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:700;margin-bottom:1rem}
+.module p.body{color:var(--dim);max-width:44rem}
+
+/* hero */
+#hero{padding-top:9.5rem}
+#hero h1{font-size:clamp(2.4rem,6.6vw,4.4rem);font-weight:700;margin-bottom:1.4rem}
+#hero h1 .hl{
+    background:linear-gradient(115deg,var(--leaf) 8%,var(--pollen) 36%,var(--rose) 62%,var(--leaf) 92%);
+    background-size:240% 100%;
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:sapFlow 9s ease-in-out infinite;
+}
+@keyframes sapFlow{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+#hero .typed-wrap{font-family:var(--mono);font-size:.8rem;color:var(--leaf);margin-bottom:1.6rem;min-height:1.4em}
+#hero .cursor{display:inline-block;width:.6em;height:1em;background:var(--leaf);vertical-align:-2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+#hero p.body{font-size:1.08rem;max-width:38rem}
+.actions{margin-top:2.2rem;display:flex;gap:1rem;flex-wrap:wrap}
+.btn{
+    display:inline-flex;align-items:center;gap:.6rem;padding:.95rem 1.8rem;border-radius:999px;
+    font-weight:600;font-size:.95rem;text-decoration:none;font-family:var(--mono);
+    transition:transform .2s,box-shadow .2s,border-color .2s,color .2s;
+}
+.btn-bloom{background:linear-gradient(115deg,var(--leaf),var(--pollen));color:var(--night)}
+.btn-bloom:hover{transform:translateY(-2px);box-shadow:0 14px 40px -14px rgba(110,231,168,.6)}
+.btn-wire{border:1px solid var(--hair);color:var(--ink)}
+.btn-wire:hover{border-color:var(--amber);color:var(--amber)}
+.vitals{margin-top:2.8rem;display:flex;gap:2rem;flex-wrap:wrap;font-size:.8rem;color:var(--dim);font-family:var(--mono)}
+.vitals span{display:flex;align-items:center;gap:.5rem}
+.vitals i{width:7px;height:7px;border-radius:50%;background:var(--leaf);animation:vitalPulse 2.2s ease-in-out infinite;box-shadow:0 0 8px var(--leaf-soft)}
+.vitals span:nth-child(2) i{animation-delay:.4s}
+.vitals span:nth-child(3) i{animation-delay:.8s}
+@keyframes vitalPulse{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.5);opacity:1}}
+
+/* nature cards (organism tissue, machine truth lines) */
+.beds{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:1.2rem;margin-top:2.2rem}
+.bed{
+    --mx:50%;--my:50%;
+    position:relative;padding:1.8rem 1.6rem;border-radius:16px;
+    background:rgba(13,23,20,.55);border:1px solid var(--hair);
+    transition:transform .4s cubic-bezier(.22,.8,.3,1),border-color .4s;overflow:hidden;
+}
+.bed::before{
+    content:'';position:absolute;inset:0;
+    background:radial-gradient(300px circle at var(--mx) var(--my),rgba(255,192,110,.12),transparent 65%);
+    opacity:0;transition:opacity .4s;pointer-events:none;
+}
+.bed:hover{transform:translateY(-6px);border-color:rgba(110,231,168,.45)}
+.bed:hover::before{opacity:1}
+.bed .pip{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.15rem;margin-bottom:1.1rem;background:rgba(110,231,168,.1);border:1px solid rgba(110,231,168,.3)}
+.bed h3{font-size:1.12rem;margin-bottom:.6rem}
+.bed p{font-size:.9rem;color:var(--dim);line-height:1.7}
+.bed .truth{margin-top:1.1rem;padding-top:.9rem;border-top:1px solid var(--hair);font-size:.78rem;color:var(--leaf);font-family:var(--mono)}
+
+/* crew roster */
+.roster{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.9rem;margin-top:1.8rem}
+.agent{
+    border:1px solid var(--hair);border-radius:14px;padding:1.1rem;background:rgba(13,23,20,.5);
+    font-family:var(--mono);transition:border-color .25s,transform .25s;text-align:center;
+}
+.agent:hover{transform:translateY(-4px);border-color:rgba(246,168,200,.5)}
+.agent .nucleus{
+    width:46px;height:46px;margin:0 auto .7rem;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;
+    background:radial-gradient(circle at 35% 30%,rgba(255,192,110,.55),rgba(110,231,168,.22));
+    border:1px solid rgba(255,192,110,.4);color:#fff;
+    animation:nucleusBreathe 4.5s ease-in-out infinite;
+}
+.agent:nth-child(2n) .nucleus{animation-delay:.7s}
+.agent:nth-child(3n) .nucleus{animation-delay:1.3s}
+@keyframes nucleusBreathe{0%,100%{box-shadow:0 0 10px rgba(255,192,110,.25)}50%{box-shadow:0 0 24px rgba(110,231,168,.5)}}
+.agent b{display:block;font-size:.88rem}
+.agent small{display:block;color:var(--dim);font-size:.66rem;line-height:1.5}
+.agent .task{margin-top:.45rem;font-size:.62rem;color:var(--amber)}
+
+/* planting record (ledger) */
+.ledger{width:100%;border-collapse:collapse;margin-top:1.6rem;font-size:.88rem}
+.ledger th{font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);text-align:left;padding:.7rem .8rem;border-bottom:1px solid var(--hair)}
+.ledger td{padding:.85rem .8rem;border-bottom:1px solid var(--hair);vertical-align:top}
+.ledger td:first-child{font-family:var(--mono);color:var(--amber);white-space:nowrap;font-size:.78rem}
+.ledger td:last-child{font-family:var(--mono);color:var(--leaf);white-space:nowrap;font-size:.72rem}
+.ledger tbody tr{transition:background .2s}
+.ledger tbody tr:hover{background:rgba(110,231,168,.05)}
+@media(max-width:640px){.ledger td:last-child,.ledger th:last-child{display:none}}
+
+/* stats under leaves: hover to brush away */
+.undergrowth{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1.8rem}
+.mossy{
+    border:1px solid var(--hair);border-radius:14px;padding:1.4rem;cursor:pointer;position:relative;
+    transition:border-color .3s;
+}
+.mossy:hover,.mossy:focus-visible{border-color:var(--amber);outline:none}
+.mossy .label{font-family:var(--mono);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-bottom:.7rem}
+.mossy .value{font-family:var(--mono);font-size:2rem;font-weight:700;color:var(--pollen);position:relative;display:inline-block}
+.mossy .value::after{
+    content:'🌿🌿🌿';position:absolute;inset:-4px -8px;display:flex;align-items:center;justify-content:center;
+    font-size:1.1rem;letter-spacing:-.3em;background:var(--glass);border-radius:6px;
+    transition:opacity .45s ease,transform .45s ease;
+}
+.mossy:hover .value::after,.mossy:focus-visible .value::after{opacity:0;transform:translateY(-8px) rotate(-4deg)}
+.mossy .why{font-size:.8rem;color:var(--dim);margin-top:.6rem}
+.mossy .hint{position:absolute;top:1.2rem;right:1.2rem;font-family:var(--mono);font-size:.6rem;color:var(--dim);letter-spacing:.1em}
+.mossy:hover .hint{display:none}
+
+/* growth stages (decision trail as seasons) */
+.stages{margin-top:1.8rem;position:relative;padding-left:1.7rem}
+.stages::before{content:'';position:absolute;left:.5rem;top:.4rem;bottom:.4rem;width:1.5px;background:linear-gradient(var(--leaf),var(--amber),var(--rose))}
+.stage{position:relative;padding:0 0 1.7rem}
+.stage::before{
+    content:'';position:absolute;left:-1.7rem;top:.35rem;width:11px;height:11px;border-radius:50%;
+    background:var(--night);border:2px solid var(--leaf);margin-left:.02rem;
+}
+.stage:nth-child(2)::before{border-color:var(--pollen)}
+.stage:nth-child(3)::before{border-color:var(--amber)}
+.stage:nth-child(4)::before{border-color:var(--rose)}
+.stage .d-id{font-family:var(--mono);font-size:.66rem;color:var(--amber);letter-spacing:.12em}
+.stage h3{font-size:1.05rem;margin:.25rem 0 .35rem}
+.stage p{font-size:.88rem;color:var(--dim);max-width:42rem}
+
+/* closing chamber */
+#close{text-align:center;position:relative}
+#close h2{font-size:clamp(1.9rem,5vw,3rem)}
+#close .body{margin:0 auto 2rem;max-width:34rem}
+#close .actions{justify-content:center}
+.pulse-ring{
+    position:absolute;top:50%;left:50%;width:340px;height:340px;border-radius:50%;
+    transform:translate(-50%,-50%);border:1px solid rgba(110,231,168,.2);
+    animation:ringGrow 4s ease-out infinite;pointer-events:none;
+}
+.pulse-ring:nth-child(2){animation-delay:1.3s;border-color:rgba(255,192,110,.18)}
+.pulse-ring:nth-child(3){animation-delay:2.6s;border-color:rgba(246,168,200,.16)}
+@keyframes ringGrow{0%{transform:translate(-50%,-50%) scale(.45);opacity:.85}100%{transform:translate(-50%,-50%) scale(1.6);opacity:0}}
+
+footer{
+    border-top:1px solid var(--hair);margin-top:5rem;padding:2rem 1.4rem 6rem;position:relative;z-index:2;
+    font-family:var(--mono);font-size:.72rem;color:var(--dim);
+    display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;max-width:1080px;margin-left:auto;margin-right:auto;
+}
+footer a{color:var(--leaf);text-decoration:none}
+
+.concept-tag{
+    position:fixed;bottom:1rem;left:1rem;z-index:95;text-decoration:none;
+    font-family:var(--mono);font-size:.68rem;color:var(--leaf);
+    background:rgba(19,33,28,.92);border:1px solid rgba(110,231,168,.45);border-radius:999px;padding:.45rem .9rem;
+    backdrop-filter:blur(6px);
+}
+</style>
+</head>
+<body>
+
+<!-- greenhouse background -->
+<div class="panes" aria-hidden="true"></div>
+<div class="lamps" aria-hidden="true"><i class="l1"></i><i class="l2"></i><i class="l3"></i></div>
+<canvas id="fireflies" aria-hidden="true"></canvas>
+<div class="halo" id="halo" aria-hidden="true"></div>
+
+<!-- the growing vine -->
+<div id="vinewrap" aria-hidden="true">
+    <svg id="vineSvg" preserveAspectRatio="none">
+        <defs>
+            <linearGradient id="vineGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#6ee7a8"/>
+                <stop offset=".55" stop-color="#ffc06e"/>
+                <stop offset="1" stop-color="#f6a8c8"/>
+            </linearGradient>
+        </defs>
+        <path id="vinePath" d="M30 0 L30 10"/>
+        <g id="vineNodes"></g>
+    </svg>
+</div>
+
+<!-- ====== GERMINATION ====== -->
+<div id="germ" aria-hidden="true">
+    <div class="seed"><span class="core"></span><span class="ring"></span><span class="ring"></span><span class="ring"></span></div>
+    <div class="term" id="germTerm"></div>
+</div>
+<button id="skip">skip germination ⏭</button>
+
+<a class="concept-tag" href="../index.html">FINALE · THE GREENHOUSE — where machines grow</a>
+
+<!-- ====== TOP BAR ====== -->
+<div class="bar">
+    <img src="../assets/img/aiai-wordmark-white-transparent.png" alt="AIAI — Adventures in AI">
+    <div class="crumbs">
+        <a href="#hero">/welcome</a>
+        <a href="#nature">/what-grows-here</a>
+        <a href="#crew">/gardeners</a>
+        <a href="#record">/planting-record</a>
+        <a href="#numbers">/undergrowth</a>
+        <a href="#seasons">/seasons</a>
+        <a href="#close">/plant-yours</a>
+    </div>
+    <div class="status"><i></i> LIGHTS ON · DOOR OPEN</div>
+</div>
+
+<div class="frame">
+
+<!-- HERO -->
+<section class="module" id="hero" data-spec="§ 01 · sowing · owner: bee">
+    <span class="stamp">IN BLOOM ✓</span>
+    <div class="shell">
+        <div class="innards">
+            <div class="typed-wrap"><span id="typed"></span><span class="cursor"></span></div>
+            <h1>This is a greenhouse<br>for working machines.<br><span class="hl">Yours is the next seed.</span></h1>
+            <p class="body">
+                Everything growing in here is real: the six-agent AI team that runs Adventures in AI every day,
+                tending inboxes, briefings and research the way a gardener tends beds — on a schedule, in all weathers, without being asked.
+                The fireflies drifting past are the work happening. The feed in the corner is the potting bench.
+                Most consultancies show you a deck. We'd rather leave the lights on and the door open.
+            </p>
+            <div class="actions">
+                <a class="btn btn-bloom" href="#nature">wander_the_beds()</a>
+                <a class="btn btn-wire" href="https://adventuresinai.co.uk/contact.html">plant_a_seed(yours)</a>
+            </div>
+            <div class="vitals">
+                <span><i></i> 6 gardeners — on shift</span>
+                <span><i></i> inbox tended — every 30 min</span>
+                <span><i></i> harvest briefing — sundays, 3am</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- WHAT GROWS HERE -->
+<section class="module" id="nature" data-spec="§ 02 · the nature of it · owner: mel">
+    <span class="stamp">GROWN ✓</span>
+    <div class="shell">
+        <div class="innards">
+            <p class="tagline-spec">// why grow instead of install</p>
+            <h2>Installed software waits. Grown systems keep working.</h2>
+            <p class="body">Most "AI adoption" is a chatbot somebody has to remember to prompt — a plastic plant. A grown system has roots in your actual workflows and keeps photosynthesising whatever the day brings. That's the difference between a tool and a capability.</p>
+            <div class="beds">
+                <div class="bed">
+                    <div class="pip">👁</div>
+                    <h3>It senses</h3>
+                    <p>Every inbound email read and triaged — critical, action, info, noise — every thirty minutes. Platform changes, competitor moves and research tracked without anyone asking.</p>
+                    <p class="truth">↳ running on our own business since day one</p>
+                </div>
+                <div class="bed">
+                    <div class="pip">🫀</div>
+                    <h3>It digests</h3>
+                    <p>A 20KB video transcript becomes a 1KB insight note. Every Sunday at 3am the week's signals — research, email, platform updates — are composted into one prioritised briefing.</p>
+                    <p class="truth">↳ 95% data reduction, zero manual effort</p>
+                </div>
+                <div class="bed">
+                    <div class="pip">🌱</div>
+                    <h3>It grows</h3>
+                    <p>Each workflow it absorbs becomes the seed of the next. The briefing pipeline begat the monitor; the monitor begat the radar. Capability compounds — and you own all of it.</p>
+                    <p class="truth">↳ no landlord. your soil, your harvest</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- GARDENERS -->
+<section class="module" id="crew" data-spec="§ 03 · the gardeners · owner: luna">
+    <span class="stamp">ON SHIFT ✓</span>
+    <div class="shell">
+        <div class="innards">
+            <p class="tagline-spec">// the team tending this page</p>
+            <h2>Six gardeners. One greenhouse. Daily rounds.</h2>
+            <p class="body">Not mascots — job descriptions. Each one runs real workloads on our infrastructure right now, which is exactly the architecture we transplant into client businesses: specialists, coordinated, accountable to a human.</p>
+            <div class="roster">
+                <div class="agent"><div class="nucleus">B</div><b>bee</b><small>coordinator</small><div class="task">↳ sowed this page</div></div>
+                <div class="agent"><div class="nucleus">G</div><b>gav</b><small>research</small><div class="task">↳ verified every statistic</div></div>
+                <div class="agent"><div class="nucleus">Q</div><b>q</b><small>developer</small><div class="task">↳ built the trellis</div></div>
+                <div class="agent"><div class="nucleus">M</div><b>mel</b><small>design</small><div class="task">↳ chose tonight's light</div></div>
+                <div class="agent"><div class="nucleus">L</div><b>luna</b><small>operations</small><div class="task">↳ waters on schedule</div></div>
+                <div class="agent"><div class="nucleus">K</div><b>kieran</b><small>review</small><div class="task">↳ prunes the overclaims</div></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- PLANTING RECORD -->
+<section class="module" id="record" data-spec="§ 04 · planting record · owner: gav">
+    <span class="stamp">VERIFIED ✓</span>
+    <div class="shell">
+        <div class="innards">
+            <p class="tagline-spec">// systems currently in production</p>
+            <h2>The planting record.</h2>
+            <p class="body">Every claim on this page maps to a system that runs without being asked. This is the working inventory — each row a pattern we can re-grow in a client's soil.</p>
+            <table class="ledger">
+                <thead><tr><th>planted</th><th>what it does</th><th>tended</th></tr></thead>
+                <tbody>
+                    <tr><td>email.monitor</td><td>Inbox triaged into critical / action / info / noise, with human escalation</td><td>*/30 min</td></tr>
+                    <tr><td>morning.brief</td><td>Calendar, weather, email digest, tasks, relevant news — before the kettle boils</td><td>daily 07:00</td></tr>
+                    <tr><td>youtube.intel</td><td>Monitored channels distilled: 20KB transcript → 1KB insight note</td><td>3× weekly</td></tr>
+                    <tr><td>synthesis.engine</td><td>All sources cross-connected into one prioritised action briefing</td><td>Sun 03:00</td></tr>
+                    <tr><td>platform.radar</td><td>New models, pricing changes and releases tracked and surfaced</td><td>weekly</td></tr>
+                    <tr><td>health.check</td><td>The greenhouse checks its own pulse — files, gateway, config — and reports honestly</td><td>continuous</td></tr>
+                </tbody>
+            </table>
+            <p class="body" style="margin-top:1.4rem;font-size:.85rem">Plus six written case studies — including the failures. A case study that hides the blight is just a seed catalogue. <a href="https://adventuresinai.co.uk/case-studies.html" style="color:var(--amber)">Open the case files →</a></p>
+        </div>
+    </div>
+</section>
+
+<!-- UNDERGROWTH / NUMBERS -->
+<section class="module" id="numbers" data-spec="§ 05 · the undergrowth · owner: gav · pruned: kieran">
+    <span class="stamp">UNCOVERED ✓</span>
+    <div class="shell">
+        <div class="innards">
+            <p class="tagline-spec">// hover to brush the leaves aside</p>
+            <h2>The numbers growing in the undergrowth.</h2>
+            <p class="body">Four statistics, independently sourced, that explain both why most AI projects wither and why the ground is still wide open.</p>
+            <div class="undergrowth">
+                <div class="mossy" tabindex="0">
+                    <span class="hint">[HOVER]</span>
+                    <div class="label">enterprise pilots · zero value</div>
+                    <div class="value">95%</div>
+                    <p class="why">of enterprise AI pilots delivered no measurable value. Source: MIT NANDA.</p>
+                </div>
+                <div class="mossy" tabindex="0">
+                    <span class="hint">[HOVER]</span>
+                    <div class="label">uk businesses · no meaningful ai</div>
+                    <div class="value">80%</div>
+                    <p class="why">of UK businesses aren't using AI meaningfully. Source: DSIT UK AI Adoption Research.</p>
+                </div>
+                <div class="mossy" tabindex="0">
+                    <span class="hint">[HOVER]</span>
+                    <div class="label">foregone uk potential</div>
+                    <div class="value">£78B</div>
+                    <p class="why">left on the table by the UK adoption gap. Fallow ground is the opportunity.</p>
+                </div>
+                <div class="mossy" tabindex="0">
+                    <span class="hint">[HOVER]</span>
+                    <div class="label">copilot user adoption</div>
+                    <div class="value">3.3%</div>
+                    <p class="why">Renting an assistant isn't owning a capability. Source: Yahoo Finance.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SEASONS -->
+<section class="module" id="seasons" data-spec="§ 06 · the seasons · owner: bee · format: building-in-public">
+    <span class="stamp">LOGGED ✓</span>
+    <div class="shell">
+        <div class="innards">
+            <p class="tagline-spec">// how an engagement actually grows</p>
+            <h2>Four seasons. Every engagement, in order.</h2>
+            <p class="body">We document client builds decision-by-decision — our "Building in Public" case study logged 14 formal decisions as they happened. The seasons map to the same gates every engagement passes through:</p>
+            <div class="stages">
+                <div class="stage">
+                    <span class="d-id">SEASON 1 · SOW — the audit</span>
+                    <h3>Find the one patch worth planting</h3>
+                    <p>One conversation about where your business actually is — tools, processes, costs, gaps. No greenfield fantasy; we work with your soil as we find it. If AI can't earn its keep, we say so and stop here. Cheapest "no" you'll ever buy.</p>
+                </div>
+                <div class="stage">
+                    <span class="d-id">SEASON 2 · GROW — the build</span>
+                    <h3>Prove it in your climate</h3>
+                    <p>A focused system against that one problem, on your data, on your infrastructure where it's sensitive. Designed so the first engagement costs less than the value it delivers — a rule, not a slogan.</p>
+                </div>
+                <div class="stage">
+                    <span class="d-id">SEASON 3 · PRUNE — the review</span>
+                    <h3>Let Kieran at it with the secateurs</h3>
+                    <p>Every build gets adversarial review — overclaims cut, failures documented. What survives pruning is what goes in the case study, blight and all.</p>
+                </div>
+                <div class="stage">
+                    <span class="d-id">SEASON 4 · HARVEST — the transfer</span>
+                    <h3>You keep everything that grew</h3>
+                    <p>Code, configuration, documentation, training — all of it transfers. The capability stays rooted in your business when we leave. You renew because it works, never because leaving hurts. No landlord.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CLOSE -->
+<section class="module" id="close" data-spec="§ 07 · your plot · owner: adam (human)">
+    <span class="stamp">KETTLE ON</span>
+    <div class="shell">
+        <div class="pulse-ring"></div><div class="pulse-ring"></div><div class="pulse-ring"></div>
+        <div class="innards">
+            <p class="tagline-spec">// one human required</p>
+            <h2>Every system in here<br>started as a single seed.</h2>
+            <p class="body">Yours starts with one conversation. Tell us about your business and we'll walk you round the greenhouse — live, on our own systems — before you commit to anything. The growing is ours to prove; the harvest is yours to keep. The human at the door is Adam: 30+ years of commercial operating, plain English, Yorkshire.</p>
+            <div class="actions">
+                <a class="btn btn-bloom" href="https://adventuresinai.co.uk/contact.html">plant_the_first_seed()</a>
+                <a class="btn btn-wire" href="mailto:hello@adventuresinai.co.uk">hello@adventuresinai.co.uk</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+</div><!-- /frame -->
+
+<footer>
+    <span>ADVENTURES IN AI — own the routine · expand your team · choose your dependencies</span>
+    <span>finale (the greenhouse) — not the live site · <a href="https://adventuresinai.co.uk">adventuresinai.co.uk</a></span>
+</footer>
+
+<!-- ====== POTTING-BENCH FEED ====== -->
+<div id="dock" role="log" aria-label="Agent operations feed">
+    <header id="dockHead">
+        <span class="lamp"></span> potting-bench · aiai greenhouse
+        <span class="tog" id="dockTog">▾</span>
+    </header>
+    <div id="feed"></div>
+</div>
+
+<script>
+(() => {
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ================= fireflies: organism field + workshop warmth ================= */
+const cv = document.getElementById('fireflies');
+const ctx = cv.getContext('2d');
+let W, H, flies = [], mouse = {x:-9999, y:-9999};
+const PALETTE = [
+    [255,192,110],  // lamp amber
+    [110,231,168],  // leaf
+    [255,226,160],  // pollen
+    [246,168,200],  // bloom (rare)
+];
+function pick() {
+    const r = Math.random();
+    return r < .42 ? PALETTE[0] : r < .78 ? PALETTE[1] : r < .94 ? PALETTE[2] : PALETTE[3];
+}
+function seed() {
+    W = cv.width = innerWidth;
+    H = cv.height = innerHeight;
+    const n = Math.min(100, Math.floor(W*H/18000));
+    flies = Array.from({length:n}, () => ({
+        x: Math.random()*W, y: Math.random()*H,
+        vx: (Math.random()-.5)*.26, vy: (Math.random()-.5)*.26,
+        r: .9 + Math.random()*1.8,
+        ph: Math.random()*Math.PI*2,
+        tw: 1.2 + Math.random()*2.4,
+        c: pick(),
+    }));
+}
+seed();
+addEventListener('resize', () => { seed(); buildVine(); });
+addEventListener('pointermove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+addEventListener('pointerleave', () => { mouse.x = -9999; mouse.y = -9999; });
+
+const LINK = 120, SENSE = 180;
+let t = 0;
+function tick() {
+    t += .016;
+    ctx.clearRect(0,0,W,H);
+    for (const f of flies) {
+        f.x += f.vx + Math.sin(t + f.ph)*.07;
+        f.y += f.vy + Math.cos(t*.8 + f.ph)*.07;
+        // organism instinct: curious from afar, shy up close
+        const dx = mouse.x - f.x, dy = mouse.y - f.y, d = Math.hypot(dx,dy);
+        if (d < SENSE && d > 0.01) {
+            const pull = d < 64 ? -.04 : .013;
+            f.x += dx/d * pull * (SENSE-d)*.15;
+            f.y += dy/d * pull * (SENSE-d)*.15;
+        }
+        if (f.x < -20) f.x = W+20; if (f.x > W+20) f.x = -20;
+        if (f.y < -20) f.y = H+20; if (f.y > H+20) f.y = -20;
+    }
+    // mycelium links — faint, warm
+    for (let i=0;i<flies.length;i++) {
+        const a = flies[i];
+        for (let j=i+1;j<flies.length;j++) {
+            const b = flies[j];
+            const d = Math.hypot(a.x-b.x, a.y-b.y);
+            if (d < LINK) {
+                const near = Math.min(Math.hypot(mouse.x-a.x,mouse.y-a.y), Math.hypot(mouse.x-b.x,mouse.y-b.y));
+                const excited = near < SENSE ? (1 - near/SENSE) : 0;
+                const alpha = (1 - d/LINK) * (0.07 + excited*.4);
+                ctx.strokeStyle = excited > .25 ? `rgba(255,192,110,${alpha})` : `rgba(110,231,168,${alpha})`;
+                ctx.lineWidth = .5 + excited*.8;
+                ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+            }
+        }
+    }
+    // firefly bodies: twinkle + glow brighter near the visitor
+    for (const f of flies) {
+        const near = Math.hypot(mouse.x-f.x, mouse.y-f.y);
+        const excited = near < SENSE ? (1 - near/SENSE) : 0;
+        const twinkle = .5 + Math.sin(t*f.tw + f.ph)*.32;
+        const a = Math.min(1, twinkle + excited*.55);
+        const [r,g,b] = f.c;
+        const rad = f.r*(1+Math.sin(t*2+f.ph)*.3) + excited*1.7;
+        ctx.beginPath(); ctx.arc(f.x, f.y, rad*3, 0, Math.PI*2);
+        ctx.fillStyle = `rgba(${r},${g},${b},${a*.07})`; ctx.fill();
+        ctx.beginPath(); ctx.arc(f.x, f.y, rad, 0, Math.PI*2);
+        ctx.fillStyle = `rgba(${r},${g},${b},${a*.78})`; ctx.fill();
+    }
+    requestAnimationFrame(tick);
+}
+if (!reduce) tick();
+else { for (const f of flies){ const [r,g,b]=f.c; ctx.beginPath(); ctx.arc(f.x,f.y,f.r,0,Math.PI*2); ctx.fillStyle=`rgba(${r},${g},${b},.4)`; ctx.fill(); } }
+
+/* ================= cursor halo ================= */
+const halo = document.getElementById('halo');
+if (!reduce) {
+    let hx=-100, hy=-100, tx=-100, ty=-100;
+    addEventListener('pointermove', e => { tx = e.clientX; ty = e.clientY; });
+    (function glide(){
+        hx += (tx-hx)*.18; hy += (ty-hy)*.18;
+        halo.style.left = hx+'px'; halo.style.top = hy+'px';
+        requestAnimationFrame(glide);
+    })();
+    document.querySelectorAll('a,button').forEach(el => {
+        el.addEventListener('pointerenter', () => halo.classList.add('touching'));
+        el.addEventListener('pointerleave', () => halo.classList.remove('touching'));
+    });
+}
+
+/* ================= the vine: grows with scroll, sprouts at sections ================= */
+const vineSvg = document.getElementById('vineSvg');
+const vinePath = document.getElementById('vinePath');
+const vineNodes = document.getElementById('vineNodes');
+let vineLen = 0, nodeMarks = [];
+const vx = y => 30 + Math.sin(y/260)*15;
+
+function buildVine() {
+    const docH = document.documentElement.scrollHeight;
+    vineSvg.setAttribute('viewBox', `0 0 60 ${docH}`);
+    vineSvg.setAttribute('width', '60');
+    vineSvg.setAttribute('height', docH);
+    let d = `M${vx(0)} 0`;
+    for (let y=30; y<=docH; y+=30) d += ` L${vx(y).toFixed(1)} ${y}`;
+    vinePath.setAttribute('d', d);
+    vineLen = vinePath.getTotalLength();
+    vinePath.style.strokeDasharray = vineLen;
+    // sprout a node + bud beside each module
+    vineNodes.innerHTML = '';
+    nodeMarks = [];
+    document.querySelectorAll('.module').forEach(m => {
+        const y = m.offsetTop + 40;
+        const x = vx(y);
+        const node = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        node.setAttribute('cx',x); node.setAttribute('cy',y); node.setAttribute('r',4.5);
+        node.setAttribute('class','vine-node');
+        const bud = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        bud.setAttribute('cx',x + (Math.sin(y/260)>0?9:-9)); bud.setAttribute('cy',y-7); bud.setAttribute('r',2.6);
+        bud.setAttribute('class','vine-bud');
+        vineNodes.appendChild(node); vineNodes.appendChild(bud);
+        nodeMarks.push({y, node, bud});
+    });
+    updateVine();
+}
+function updateVine() {
+    const docH = document.documentElement.scrollHeight;
+    const tip = Math.min(docH, scrollY + innerHeight*.72);     // how far the vine has grown
+    const p = tip/docH;
+    vinePath.style.strokeDashoffset = reduce ? 0 : vineLen*(1-p);
+    for (const n of nodeMarks) {
+        const lit = reduce || tip >= n.y;
+        n.node.classList.toggle('lit', lit);
+        n.bud.classList.toggle('lit', lit);
+    }
+}
+addEventListener('scroll', updateVine, {passive:true});
+
+/* ================= germination ================= */
+const germLines = [
+    ['sys',  'aiai.greenhouse v6 — first light…'],
+    ['bee',  'bee> morning all. visitor at the gate — warm the lamps, wake the beds.'],
+    ['q',    'q> trellis up. sections grafted: welcome, beds, gardeners, record, seasons.'],
+    ['mel',  'mel> light tonight: leaf, pollen, a little bloom. like a greenhouse at dusk.'],
+    ['gav',  'gav> statistics re-verified against sources. 4 of 4 still hold.'],
+    ['kieran','kieran> pruned two overclaims. healthier without them.'],
+    ['bee',  'bee> doors open. mind the fireflies — 3… 2… 1…'],
+];
+const germ = document.getElementById('germ');
+const term = document.getElementById('germTerm');
+const skip = document.getElementById('skip');
+let germDone = false;
+
+function endGerm() {
+    if (germDone) return;
+    germDone = true;
+    germ.classList.add('gone');
+    skip.style.display = 'none';
+    setTimeout(() => germ.remove(), 1000);
+    startPage();
+}
+skip.addEventListener('click', endGerm);
+
+if (reduce) { endGerm(); }
+else {
+    germLines.forEach((l, i) => {
+        const div = document.createElement('div');
+        div.className = l[0]==='sys' ? 'ln sys' : 'ln who-'+l[0];
+        div.textContent = l[1];
+        term.appendChild(div);
+        setTimeout(() => div.classList.add('on'), 350 + i * 600);
+    });
+    setTimeout(endGerm, 350 + germLines.length * 600 + 750);
+}
+
+function startPage() {
+    buildVine();
+    const typedEl = document.getElementById('typed');
+    const msg = 'bee> page germinated in 4.2s — mind your step, things are growing.';
+    if (reduce) { typedEl.textContent = msg; return; }
+    let i = 0;
+    (function type() {
+        typedEl.textContent = msg.slice(0, ++i);
+        if (i < msg.length) setTimeout(type, 26);
+    })();
+}
+if (document.readyState === 'complete') buildVine();
+else addEventListener('load', buildVine);
+
+/* ================= modules grow in + potting-bench narration ================= */
+const feed = document.getElementById('feed');
+const said = new Set();
+const narration = {
+    hero: [
+        ['mel','hero in bloom. leaf and pollen on glass. welcoming, not blinding.'],
+        ['kieran','"everything growing in here is real" — verified, allowed.'],
+    ],
+    nature: [
+        ['gav','three beds bedded in: senses, digests, grows.'],
+        ['bee','reminder: plastic plants prompt nothing. grown systems do.'],
+    ],
+    crew: [
+        ['luna','gardener manifest rendered. all six on rounds.'],
+        ['q','i did build the trellis. it\'s load-bearing.'],
+    ],
+    record: [
+        ['gav','planting record loaded. six systems, all in production.'],
+        ['luna','email.monitor next tended in <30 min. as always.'],
+    ],
+    numbers: [
+        ['gav','undergrowth uncovered. sources: MIT NANDA, DSIT, Yahoo Finance.'],
+        ['kieran','the numbers survive pruning. the industry\'s, not ours.'],
+    ],
+    seasons: [
+        ['bee','four seasons online. sow, grow, prune, harvest.'],
+        ['kieran','season 3 is my favourite. obviously.'],
+    ],
+    close: [
+        ['luna','visitor reached /plant-yours. kettle is genuinely on.'],
+        ['bee','adam takes it from the door. we\'ll keep the lights on. growing.'],
+    ],
+};
+function say(agent, text) {
+    const d = document.createElement('div');
+    const tm = new Date().toTimeString().slice(0,8);
+    d.innerHTML = `<span class="t">${tm}</span><span class="${agent}">${agent}></span> ${text}`;
+    feed.appendChild(d);
+    feed.scrollTop = feed.scrollHeight;
+    while (feed.children.length > 40) feed.removeChild(feed.firstChild);
+}
+say('bee', 'potting bench open. narrating as you wander…');
+
+const mObs = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add('grown');
+    const id = e.target.id;
+    if (narration[id] && !said.has(id)) {
+        said.add(id);
+        narration[id].forEach((l, i) => setTimeout(() => say(l[0], l[1]), 300 + i * 1400));
+    }
+}), {threshold: .22});
+document.querySelectorAll('.module').forEach(m => mObs.observe(m));
+
+/* idle rounds so the greenhouse never feels empty */
+const idle = [
+    ['luna','health check passed. 0 anomalies. compost turning nicely.'],
+    ['gav','platform radar: 2 new model releases queued for sunday synthesis.'],
+    ['q','beelinks build: gate 9 green. logging decision D-015.'],
+    ['mel','moved a lamp 2 degrees. the ferns prefer it. nobody asked. it matters.'],
+    ['luna','email.monitor: 14 triaged, 1 escalated, 9 noise composted.'],
+    ['bee','synthesis.engine scheduled — sunday 03:00, as ever. the night bloom.'],
+];
+let idleIx = 0;
+setInterval(() => { if (!document.hidden) say(idle[idleIx % idle.length][0], idle[idleIx++ % idle.length][1]); }, 14000);
+
+/* dock collapse */
+const dock = document.getElementById('dock');
+document.getElementById('dockHead').addEventListener('click', () => {
+    dock.classList.toggle('hidden-dock');
+    document.getElementById('dockTog').textContent = dock.classList.contains('hidden-dock') ? '▴' : '▾';
+});
+
+/* card glow follows pointer (organism membrane) */
+document.querySelectorAll('.bed').forEach(card => {
+    card.addEventListener('pointermove', e => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', (e.clientX-r.left)+'px');
+        card.style.setProperty('--my', (e.clientY-r.top)+'px');
+    });
+});
+})();
+</script>
+</body>
+</html>

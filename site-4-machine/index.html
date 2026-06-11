@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIAI — Concept 4: The Machine That Builds It</title>
+<meta name="description" content="Variation 4 of 4 — you are watching the product. The AI team that runs Adventures in AI assembles this page in front of you, narrating as it goes.">
+<link rel="icon" type="image/x-icon" href="../assets/img/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+    --void:#0a0d13;
+    --panel:#10141d;
+    --panel-2:#151b27;
+    --grid:rgba(115,140,180,.07);
+    --amber:#ffb454;
+    --phos:#5df2a6;
+    --violet:#9d8cff;
+    --ink:#e9edf4;
+    --dim:#8b97a8;
+    --hair:rgba(139,151,168,.16);
+    --mono:'JetBrains Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+    background:var(--void);color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.65;
+    background-image:
+        linear-gradient(var(--grid) 1px,transparent 1px),
+        linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:44px 44px;
+}
+::selection{background:var(--amber);color:var(--void)}
+h1,h2,h3{letter-spacing:-.02em;line-height:1.12}
+.mono{font-family:var(--mono)}
+
+/* ================= BOOT OVERLAY ================= */
+#boot{
+    position:fixed;inset:0;z-index:200;background:var(--void);
+    display:flex;align-items:center;justify-content:center;
+    transition:opacity .8s ease;
+}
+#boot.gone{opacity:0;pointer-events:none}
+#boot .term{
+    width:min(640px,92vw);font-family:var(--mono);font-size:clamp(.72rem,2.4vw,.88rem);
+    color:var(--phos);line-height:1.9;
+}
+#boot .term .ln{opacity:0;transform:translateY(4px);transition:opacity .25s,transform .25s;white-space:pre-wrap}
+#boot .term .ln.on{opacity:1;transform:none}
+#boot .term .who-bee{color:var(--amber)}
+#boot .term .who-q{color:var(--violet)}
+#boot .term .who-mel{color:#ff8ac2}
+#boot .term .who-kieran{color:#7dd3fc}
+#boot .term .sys{color:var(--dim)}
+#boot .cursor{display:inline-block;width:.6em;height:1.05em;background:var(--phos);vertical-align:-2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+#skip{
+    position:fixed;bottom:1.4rem;right:1.4rem;z-index:201;
+    font-family:var(--mono);font-size:.75rem;color:var(--dim);
+    background:none;border:1px solid var(--hair);border-radius:6px;padding:.5rem 1rem;cursor:pointer;
+    transition:color .2s,border-color .2s;
+}
+#skip:hover{color:var(--amber);border-color:var(--amber)}
+
+/* ================= OPS FEED DOCK ================= */
+#dock{
+    position:fixed;right:1rem;bottom:1rem;z-index:90;width:min(360px,calc(100vw - 2rem));
+    background:rgba(16,20,29,.92);border:1px solid var(--hair);border-radius:12px;
+    backdrop-filter:blur(10px);overflow:hidden;
+    box-shadow:0 18px 60px -20px rgba(0,0,0,.7);
+    transition:transform .4s ease,opacity .4s ease;
+}
+#dock.hidden-dock{transform:translateY(calc(100% - 2.6rem))}
+#dock header{
+    display:flex;align-items:center;gap:.6rem;padding:.6rem .9rem;cursor:pointer;
+    font-family:var(--mono);font-size:.72rem;color:var(--dim);border-bottom:1px solid var(--hair);
+    user-select:none;
+}
+#dock header .lamp{width:8px;height:8px;border-radius:50%;background:var(--phos);animation:lamp 2.4s ease-in-out infinite}
+@keyframes lamp{0%,100%{box-shadow:0 0 4px var(--phos)}50%{box-shadow:0 0 12px var(--phos)}}
+#dock header .tog{margin-left:auto;color:var(--dim)}
+#feed{height:170px;overflow-y:auto;padding:.7rem .9rem;font-family:var(--mono);font-size:.7rem;line-height:1.8;scrollbar-width:thin}
+#feed div{opacity:0;animation:fin .4s forwards}
+@keyframes fin{to{opacity:1}}
+#feed .t{color:var(--dim);margin-right:.4em}
+#feed .bee{color:var(--amber)} #feed .q{color:var(--violet)} #feed .mel{color:#ff8ac2}
+#feed .gav{color:var(--phos)} #feed .luna{color:#fcd34d} #feed .kieran{color:#7dd3fc}
+@media(max-width:700px){#dock{display:none}}
+
+/* ================= LAYOUT ================= */
+.frame{max-width:1080px;margin:0 auto;padding:0 1.4rem;position:relative;z-index:1}
+
+/* top bar */
+.bar{
+    position:fixed;top:0;left:0;right:0;z-index:80;
+    display:flex;align-items:center;justify-content:space-between;gap:1rem;
+    padding:.8rem 1.4rem;background:rgba(10,13,19,.88);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--hair);font-family:var(--mono);font-size:.75rem;
+}
+.bar img{height:26px;opacity:.92}
+.bar .crumbs{color:var(--dim);display:flex;gap:1.4rem}
+.bar .crumbs a{color:var(--dim);text-decoration:none;transition:color .2s}
+.bar .crumbs a:hover{color:var(--amber)}
+.bar .status{display:flex;align-items:center;gap:.5rem;color:var(--phos)}
+.bar .status i{width:7px;height:7px;border-radius:50%;background:var(--phos);animation:lamp 2.4s infinite}
+@media(max-width:840px){.bar .crumbs{display:none}}
+
+/* build-in animation: wireframe -> painted */
+.module{
+    position:relative;margin:5.5rem auto;border-radius:14px;
+}
+.module::before{
+    content:attr(data-spec);
+    position:absolute;top:-1.45rem;left:.2rem;
+    font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;color:var(--dim);
+    text-transform:uppercase;
+}
+.module .shell{
+    border:1px dashed rgba(255,180,84,.4);border-radius:14px;padding:2.6rem 2.2rem;
+    background:transparent;
+    transition:border-color .9s ease,background .9s ease,box-shadow .9s ease;
+}
+.module .innards{opacity:0;transform:translateY(14px);filter:saturate(.2);transition:opacity .8s ease .35s,transform .8s ease .35s,filter 1.2s ease .35s}
+.module.built .shell{border:1px solid var(--hair);background:linear-gradient(170deg,var(--panel),var(--panel-2));box-shadow:0 30px 80px -50px rgba(0,0,0,.8)}
+.module.built .innards{opacity:1;transform:none;filter:none}
+.module .stamp{
+    position:absolute;top:-.9rem;right:1.2rem;
+    font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;
+    color:var(--phos);border:1px solid var(--phos);border-radius:4px;padding:.18rem .55rem;
+    background:var(--void);opacity:0;transform:rotate(3deg) scale(1.3);
+    transition:opacity .35s ease 1s,transform .35s cubic-bezier(.2,1.6,.4,1) 1s;
+}
+.module.built .stamp{opacity:1;transform:rotate(-2deg) scale(1)}
+@media(prefers-reduced-motion:reduce){
+    .module .shell{border:1px solid var(--hair);background:linear-gradient(170deg,var(--panel),var(--panel-2))}
+    .module .innards{opacity:1;transform:none;filter:none;transition:none}
+    .module .stamp{opacity:1;transform:none;transition:none}
+}
+
+/* typography inside modules */
+.tagline-spec{font-family:var(--mono);font-size:.72rem;color:var(--amber);letter-spacing:.16em;text-transform:uppercase;margin-bottom:1rem}
+h2{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;margin-bottom:1rem}
+.module p.body{color:var(--dim);max-width:44rem}
+
+/* hero */
+#hero{padding-top:9.5rem}
+#hero h1{font-size:clamp(2.4rem,6.6vw,4.6rem);font-weight:800;margin-bottom:1.4rem}
+#hero h1 .hl{color:var(--amber)}
+#hero .typed-wrap{font-family:var(--mono);font-size:.8rem;color:var(--phos);margin-bottom:1.6rem;min-height:1.4em}
+#hero p.body{font-size:1.08rem;max-width:38rem}
+.actions{margin-top:2.2rem;display:flex;gap:1rem;flex-wrap:wrap}
+.btn{
+    display:inline-flex;align-items:center;gap:.6rem;padding:.95rem 1.8rem;border-radius:8px;
+    font-weight:600;font-size:.95rem;text-decoration:none;font-family:var(--mono);
+    transition:transform .2s,box-shadow .2s,background .2s,color .2s;
+}
+.btn-amber{background:var(--amber);color:var(--void)}
+.btn-amber:hover{transform:translateY(-2px);box-shadow:0 14px 40px -14px rgba(255,180,84,.6)}
+.btn-wire{border:1px solid var(--hair);color:var(--ink)}
+.btn-wire:hover{border-color:var(--amber);color:var(--amber)}
+
+/* roster */
+.roster{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.9rem;margin-top:1.8rem}
+.agent{
+    border:1px solid var(--hair);border-radius:10px;padding:1.1rem;background:rgba(10,13,19,.5);
+    font-family:var(--mono);transition:border-color .25s,transform .25s;
+}
+.agent:hover{border-color:var(--amber);transform:translateY(-3px)}
+.agent .id{display:flex;align-items:center;gap:.55rem;margin-bottom:.55rem}
+.agent .id i{width:8px;height:8px;border-radius:50%;background:var(--phos);animation:lamp 2.4s infinite}
+.agent:nth-child(2) .id i{animation-delay:.3s}.agent:nth-child(3) .id i{animation-delay:.6s}
+.agent:nth-child(4) .id i{animation-delay:.9s}.agent:nth-child(5) .id i{animation-delay:1.2s}
+.agent:nth-child(6) .id i{animation-delay:1.5s}
+.agent b{font-size:.9rem}
+.agent small{display:block;color:var(--dim);font-size:.68rem;line-height:1.6}
+.agent .task{margin-top:.5rem;font-size:.64rem;color:var(--amber)}
+
+/* evidence table */
+.ledger{width:100%;border-collapse:collapse;margin-top:1.6rem;font-size:.88rem}
+.ledger th{font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);text-align:left;padding:.7rem .8rem;border-bottom:1px solid var(--hair)}
+.ledger td{padding:.85rem .8rem;border-bottom:1px solid var(--hair);vertical-align:top}
+.ledger td:first-child{font-family:var(--mono);color:var(--amber);white-space:nowrap;font-size:.78rem}
+.ledger td:last-child{font-family:var(--mono);color:var(--phos);white-space:nowrap;font-size:.72rem}
+.ledger tr{transition:background .2s}
+.ledger tbody tr:hover{background:rgba(255,180,84,.04)}
+@media(max-width:640px){.ledger td:last-child,.ledger th:last-child{display:none}}
+
+/* redacted stats: hover to reveal */
+.classified{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1.8rem}
+.secret{
+    border:1px solid var(--hair);border-radius:10px;padding:1.4rem;cursor:pointer;position:relative;
+    transition:border-color .3s;
+}
+.secret:hover,.secret:focus-visible{border-color:var(--amber);outline:none}
+.secret .label{font-family:var(--mono);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-bottom:.7rem}
+.secret .value{font-family:var(--mono);font-size:2rem;font-weight:700;color:var(--amber);position:relative;display:inline-block}
+.secret .value::after{
+    content:'';position:absolute;inset:-2px -6px;background:repeating-linear-gradient(45deg,#1c2433 0 8px,#141a26 8px 16px);
+    border-radius:4px;transition:opacity .4s ease;
+}
+.secret:hover .value::after,.secret:focus-visible .value::after{opacity:0}
+.secret .why{font-size:.8rem;color:var(--dim);margin-top:.6rem}
+.secret .hint{position:absolute;top:1.2rem;right:1.2rem;font-family:var(--mono);font-size:.6rem;color:var(--dim);letter-spacing:.1em}
+.secret:hover .hint{display:none}
+
+/* decision trail */
+.trail{margin-top:1.8rem;position:relative;padding-left:1.6rem}
+.trail::before{content:'';position:absolute;left:.45rem;top:.4rem;bottom:.4rem;width:1px;background:linear-gradient(var(--amber),var(--violet))}
+.decision{position:relative;padding:0 0 1.7rem}
+.decision::before{
+    content:'';position:absolute;left:-1.6rem;top:.4rem;width:9px;height:9px;border-radius:50%;
+    background:var(--void);border:2px solid var(--amber);margin-left:.05rem;
+}
+.decision .d-id{font-family:var(--mono);font-size:.66rem;color:var(--amber);letter-spacing:.12em}
+.decision h3{font-size:1.05rem;margin:.25rem 0 .35rem}
+.decision p{font-size:.88rem;color:var(--dim);max-width:42rem}
+
+/* closing */
+#close{text-align:center;padding-bottom:2rem}
+#close h2{font-size:clamp(1.9rem,5vw,3rem)}
+#close .body{margin:0 auto 2rem;max-width:34rem}
+#close .actions{justify-content:center}
+
+footer{
+    border-top:1px solid var(--hair);margin-top:5rem;padding:2rem 1.4rem 6rem;position:relative;z-index:1;
+    font-family:var(--mono);font-size:.72rem;color:var(--dim);
+    display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;max-width:1080px;margin-left:auto;margin-right:auto;
+}
+footer a{color:var(--amber);text-decoration:none}
+
+.concept-tag{
+    position:fixed;bottom:1rem;left:1rem;z-index:95;text-decoration:none;
+    font-family:var(--mono);font-size:.68rem;color:var(--amber);
+    background:rgba(16,20,29,.92);border:1px solid rgba(255,180,84,.4);border-radius:999px;padding:.45rem .9rem;
+    backdrop-filter:blur(6px);
+}
+</style>
+</head>
+<body>
+
+<!-- ====== BOOT ====== -->
+<div id="boot" aria-hidden="true">
+    <div class="term" id="bootTerm"></div>
+</div>
+<button id="skip">skip intro ⏭</button>
+
+<a class="concept-tag" href="../index.html">CONCEPT 4/4 · THE MACHINE THAT BUILDS IT</a>
+
+<!-- ====== TOP BAR ====== -->
+<div class="bar">
+    <img src="../assets/img/aiai-wordmark-white-transparent.png" alt="AIAI — Adventures in AI">
+    <div class="crumbs">
+        <a href="#hero">/brief</a>
+        <a href="#crew">/crew</a>
+        <a href="#evidence">/evidence</a>
+        <a href="#numbers">/numbers</a>
+        <a href="#trail">/decision-trail</a>
+        <a href="#close">/engage</a>
+    </div>
+    <div class="status"><i></i> SYSTEM LIVE</div>
+</div>
+
+<div class="frame">
+
+<!-- HERO -->
+<section class="module" id="hero" data-spec="§ 01 · brief · owner: bee">
+    <span class="stamp">ASSEMBLED ✓</span>
+    <div class="shell">
+        <div class="innards">
+            <div class="typed-wrap"><span id="typed"></span><span class="cursor" style="display:inline-block;width:.6em;height:1em;background:var(--phos);vertical-align:-2px;animation:blink 1s steps(1) infinite"></span></div>
+            <h1>You're not reading<br>a website. You're watching<br><span class="hl">our product work.</span></h1>
+            <p class="body">
+                This page was assembled, written and reviewed by the six-agent AI team that runs Adventures in AI every day —
+                the same team we build for clients. The ops feed in the corner is how they talk. The sections below are what they shipped.
+                Most consultancies show you a deck. We'd rather show you the machine.
+            </p>
+            <div class="actions">
+                <a class="btn btn-amber" href="#evidence">inspect_the_evidence()</a>
+                <a class="btn btn-wire" href="https://adventuresinai.co.uk/contact.html">request_build(yours)</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CREW -->
+<section class="module" id="crew" data-spec="§ 02 · crew manifest · owner: luna">
+    <span class="stamp">ON SHIFT ✓</span>
+    <div class="shell">
+        <div class="innards">
+            <p class="tagline-spec">// the team behind this page</p>
+            <h2>Six agents. Zero theatrics. Daily shift.</h2>
+            <p class="body">Not mascots — job descriptions. Each one runs real workloads on our infrastructure right now, which is exactly the architecture we transfer to clients: specialists, coordinated, accountable to a human.</p>
+            <div class="roster">
+                <div class="agent"><div class="id"><i></i><b>bee</b></div><small>coordinator / chief of staff</small><div class="task">↳ assembled this page</div></div>
+                <div class="agent"><div class="id"><i></i><b>gav</b></div><small>research</small><div class="task">↳ verified every statistic</div></div>
+                <div class="agent"><div class="id"><i></i><b>q</b></div><small>developer</small><div class="task">↳ shipped the build</div></div>
+                <div class="agent"><div class="id"><i></i><b>mel</b></div><small>design</small><div class="task">↳ chose what you're seeing</div></div>
+                <div class="agent"><div class="id"><i></i><b>luna</b></div><small>operations</small><div class="task">↳ briefings &amp; health checks</div></div>
+                <div class="agent"><div class="id"><i></i><b>kieran</b></div><small>adversarial review</small><div class="task">↳ cut three overclaims</div></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- EVIDENCE -->
+<section class="module" id="evidence" data-spec="§ 03 · evidence ledger · owner: gav">
+    <span class="stamp">VERIFIED ✓</span>
+    <div class="shell">
+        <div class="innards">
+            <p class="tagline-spec">// systems currently in production</p>
+            <h2>The evidence ledger.</h2>
+            <p class="body">Every claim on this page maps to a system that runs without being asked. This is the working inventory — each row a pattern we adapt for client businesses.</p>
+            <table class="ledger">
+                <thead><tr><th>system</th><th>what it does</th><th>cadence</th></tr></thead>
+                <tbody>
+                    <tr><td>email.monitor</td><td>Inbox triaged into critical / action / info / noise, with human escalation</td><td>*/30 min</td></tr>
+                    <tr><td>morning.brief</td><td>Calendar, weather, email digest, tasks, relevant news — before the kettle boils</td><td>daily 07:00</td></tr>
+                    <tr><td>youtube.intel</td><td>Monitored channels distilled: 20KB transcript → 1KB insight note</td><td>3× weekly</td></tr>
+                    <tr><td>synthesis.engine</td><td>All sources cross-connected into one prioritised action briefing</td><td>Sun 03:00</td></tr>
+                    <tr><td>platform.radar</td><td>New models, pricing changes and releases tracked and surfaced</td><td>weekly</td></tr>
+                    <tr><td>health.check</td><td>The system verifies itself — files, gateway, config — and reports honestly</td><td>continuous</td></tr>
+                </tbody>
+            </table>
+            <p class="body" style="margin-top:1.4rem;font-size:.85rem">Plus six written case studies — including the failures. <a href="https://adventuresinai.co.uk/case-studies.html" style="color:var(--amber)">Open the case files →</a></p>
+        </div>
+    </div>
+</section>
+
+<!-- NUMBERS -->
+<section class="module" id="numbers" data-spec="§ 04 · market intel · owner: gav · reviewed: kieran">
+    <span class="stamp">DECLASSIFIED ✓</span>
+    <div class="shell">
+        <div class="innards">
+            <p class="tagline-spec">// hover to declassify</p>
+            <h2>The numbers the industry mumbles.</h2>
+            <p class="body">Four statistics, independently sourced, that explain both why most AI projects disappoint and why the opportunity is still wide open.</p>
+            <div class="classified">
+                <div class="secret" tabindex="0">
+                    <span class="hint">[HOVER]</span>
+                    <div class="label">enterprise pilots · zero value</div>
+                    <div class="value">95%</div>
+                    <p class="why">of enterprise AI pilots delivered no measurable value. Source: MIT NANDA.</p>
+                </div>
+                <div class="secret" tabindex="0">
+                    <span class="hint">[HOVER]</span>
+                    <div class="label">uk businesses · no meaningful ai</div>
+                    <div class="value">80%</div>
+                    <p class="why">of UK businesses aren't using AI meaningfully. Source: DSIT UK AI Adoption Research.</p>
+                </div>
+                <div class="secret" tabindex="0">
+                    <span class="hint">[HOVER]</span>
+                    <div class="label">foregone uk potential</div>
+                    <div class="value">£78B</div>
+                    <p class="why">left on the table by the UK adoption gap. The gap is the opportunity.</p>
+                </div>
+                <div class="secret" tabindex="0">
+                    <span class="hint">[HOVER]</span>
+                    <div class="label">copilot user adoption</div>
+                    <div class="value">3.3%</div>
+                    <p class="why">Renting an assistant isn't owning a capability. Source: Yahoo Finance.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- DECISION TRAIL -->
+<section class="module" id="trail" data-spec="§ 05 · decision trail · owner: bee · format: building-in-public">
+    <span class="stamp">LOGGED ✓</span>
+    <div class="shell">
+        <div class="innards">
+            <p class="tagline-spec">// how an engagement actually runs</p>
+            <h2>The decision trail.</h2>
+            <p class="body">We document client builds decision-by-decision — it's how our "Building in Public" case study logged 14 formal decisions as they happened. Here's the trail every engagement follows:</p>
+            <div class="trail">
+                <div class="decision">
+                    <span class="d-id">D-001 · AUDIT</span>
+                    <h3>Find the one expensive problem</h3>
+                    <p>One conversation about where your business actually is — tools, processes, costs, gaps. No greenfield fantasy. If AI can't earn its keep, we record that decision and stop here. Cheapest "no" you'll ever buy.</p>
+                </div>
+                <div class="decision">
+                    <span class="d-id">D-002 · BUILD</span>
+                    <h3>Prove it in your environment</h3>
+                    <p>A focused system against that one problem, on your data, on your infrastructure where it's sensitive. Designed so the first engagement costs less than the value it delivers — a rule, not a slogan.</p>
+                </div>
+                <div class="decision">
+                    <span class="d-id">D-003 · REVIEW</span>
+                    <h3>Let the adversary at it</h3>
+                    <p>Every build gets the Kieran treatment — adversarial review, overclaims cut, failures documented. What survives review is what goes in the case study, crisis chapters included.</p>
+                </div>
+                <div class="decision">
+                    <span class="d-id">D-004 · TRANSFER</span>
+                    <h3>Hand over the keys</h3>
+                    <p>Code, configuration, documentation, training — all of it transfers. The capability stays when we leave. You renew because it works, never because leaving hurts. No landlord.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CLOSE -->
+<section class="module" id="close" data-spec="§ 06 · engagement · owner: adam (human)">
+    <span class="stamp">AWAITING INPUT</span>
+    <div class="shell">
+        <div class="innards">
+            <p class="tagline-spec">// one human required</p>
+            <h2>The machine is ready.<br>It's waiting for your business.</h2>
+            <p class="body">Everything you've just scrolled past runs daily without being prompted. The only thing it can't generate is the conversation about your business. That part is human — Adam, 30+ years of commercial operating, plain English, Yorkshire.</p>
+            <div class="actions">
+                <a class="btn btn-amber" href="https://adventuresinai.co.uk/contact.html">start_conversation()</a>
+                <a class="btn btn-wire" href="mailto:hello@adventuresinai.co.uk">hello@adventuresinai.co.uk</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+</div><!-- /frame -->
+
+<footer>
+    <span>ADVENTURES IN AI — own the routine · expand your team · choose your dependencies</span>
+    <span>concept 4 of 4 — not the live site · <a href="https://adventuresinai.co.uk">adventuresinai.co.uk</a></span>
+</footer>
+
+<!-- ====== OPS FEED DOCK ====== -->
+<div id="dock" role="log" aria-label="Agent operations feed">
+    <header id="dockHead">
+        <span class="lamp"></span> ops-feed · aiai internal
+        <span class="tog" id="dockTog">▾</span>
+    </header>
+    <div id="feed"></div>
+</div>
+
+<script>
+(() => {
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------------- boot sequence ---------------- */
+const bootLines = [
+    ['sys',  'aiai.gateway v6 — initialising crew…'],
+    ['bee',  'bee> morning all. visitor inbound. build the page.'],
+    ['q',    'q> compiling sections… hero, crew, evidence, numbers, trail.'],
+    ['mel',  'mel> palette locked: void / amber / phosphor. no stock photos. obviously.'],
+    ['gav',  'gav> statistics re-verified against sources. 4 of 4 hold.'],
+    ['kieran','kieran> reviewed. removed two overclaims. you\'re welcome.'],
+    ['bee',  'bee> ship it. handing over to the visitor in 3… 2… 1…'],
+];
+const boot = document.getElementById('boot');
+const term = document.getElementById('bootTerm');
+const skip = document.getElementById('skip');
+let bootDone = false;
+
+function endBoot() {
+    if (bootDone) return;
+    bootDone = true;
+    boot.classList.add('gone');
+    skip.style.display = 'none';
+    setTimeout(() => boot.remove(), 900);
+    startPage();
+}
+skip.addEventListener('click', endBoot);
+
+if (reduce) { endBoot(); }
+else {
+    bootLines.forEach((l, i) => {
+        const div = document.createElement('div');
+        div.className = 'ln who-' + l[0];
+        if (l[0] === 'sys') div.className = 'ln sys';
+        div.textContent = l[1];
+        term.appendChild(div);
+        setTimeout(() => div.classList.add('on'), 350 + i * 620);
+    });
+    const cur = document.createElement('span');
+    cur.className = 'cursor';
+    term.appendChild(cur);
+    setTimeout(endBoot, 350 + bootLines.length * 620 + 700);
+}
+
+/* ---------------- hero typed line ---------------- */
+function startPage() {
+    const typedEl = document.getElementById('typed');
+    const msg = 'bee> page assembled in 4.2s — your move, visitor.';
+    if (reduce) { typedEl.textContent = msg; return; }
+    let i = 0;
+    (function type() {
+        typedEl.textContent = msg.slice(0, ++i);
+        if (i < msg.length) setTimeout(type, 28);
+    })();
+}
+
+/* ---------------- module build-in + feed narration ---------------- */
+const feed = document.getElementById('feed');
+const said = new Set();
+const narration = {
+    hero: [
+        ['mel','hero painted. amber on void. restraint is a design choice.'],
+        ['kieran','"watching our product work" — verified true, allowed.'],
+    ],
+    crew: [
+        ['luna','crew manifest rendered. all six on shift.'],
+        ['bee','reminder: we are job descriptions, not mascots.'],
+    ],
+    evidence: [
+        ['gav','evidence ledger loaded. six systems, all in production.'],
+        ['q','email.monitor next run in <30 min. as always.'],
+    ],
+    numbers: [
+        ['gav','declassifying market intel. sources: MIT NANDA, DSIT, Yahoo Finance.'],
+        ['kieran','numbers survive review. the industry\'s, not ours.'],
+    ],
+    trail: [
+        ['bee','decision trail online. 4 gates, same as every engagement.'],
+        ['kieran','D-003 is my favourite. obviously.'],
+    ],
+    close: [
+        ['luna','visitor reached /engage. routing to the human.'],
+        ['bee','adam takes it from here. we\'ll be in the background. working.'],
+    ],
+};
+function say(agent, text) {
+    const d = document.createElement('div');
+    const t = new Date().toTimeString().slice(0,8);
+    d.innerHTML = `<span class="t">${t}</span><span class="${agent}">${agent}></span> ${text}`;
+    feed.appendChild(d);
+    feed.scrollTop = feed.scrollHeight;
+    while (feed.children.length > 40) feed.removeChild(feed.firstChild);
+}
+say('sys' in narration ? 'bee' : 'bee', 'ops feed attached. narrating as you scroll…');
+
+const mObs = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add('built');
+    const id = e.target.id;
+    if (narration[id] && !said.has(id)) {
+        said.add(id);
+        narration[id].forEach((l, i) => setTimeout(() => say(l[0], l[1]), 300 + i * 1400));
+    }
+}), {threshold: .25});
+document.querySelectorAll('.module').forEach(m => mObs.observe(m));
+
+/* idle chatter so it never feels dead */
+const idle = [
+    ['luna','health check passed. 0 anomalies.'],
+    ['gav','platform radar: 2 new model releases queued for sunday synthesis.'],
+    ['q','beelinks build: gate 9 green. logging decision D-015.'],
+    ['mel','resisting the urge to add a gradient. holding.'],
+    ['luna','email.monitor: 14 triaged, 1 escalated, 9 noise dissolved.'],
+    ['bee','synthesis.engine scheduled — sunday 03:00, as ever.'],
+];
+let idleIx = 0;
+setInterval(() => { if (!document.hidden) say(idle[idleIx % idle.length][0], idle[idleIx++ % idle.length][1]); }, 14000);
+
+/* dock collapse */
+const dock = document.getElementById('dock');
+document.getElementById('dockHead').addEventListener('click', () => {
+    dock.classList.toggle('hidden-dock');
+    document.getElementById('dockTog').textContent = dock.classList.contains('hidden-dock') ? '▴' : '▾';
+});
+})();
+</script>
+</body>
+</html>
