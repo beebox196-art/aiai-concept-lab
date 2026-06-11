@@ -1,43 +1,147 @@
-# AIAI Website Concept Lab — 4 Variations
+# AIAI Website Concept Lab
 
-Created 2026-06-11 by Claude (Fable 5) at Adam's request. Four standalone look-and-feel
-concepts for adventuresinai.co.uk. **Nothing here touches `Website/` or `Website-deploy/`.**
+Created 2026-06-11 by Claude (Fable 5) at Adam's request, over one extended session.
+Nine standalone website concepts for adventuresinai.co.uk plus one data pipeline.
+**Nothing in this folder touches `Website/` or `Website-deploy/` (the live site), and
+nothing publishes anywhere. All builds are local-only until Adam decides otherwise.**
 
-## How to view
+Audience for this file: Adam and the agent team (Bee, Q, Mel, Gav, Luna, Kieran).
+It is written so any agent can operate, extend or critique the lab without session context.
 
-Open `Tests/index.html` in a browser — it's a hub linking to all four. Or serve the folder:
+---
+
+## 1. Quick start
 
 ```bash
-cd ~/projects/aiai/Tests && python3 -m http.server 8765
-# → http://localhost:8765
+# Option A — just open the hub in a browser:
+open ~/projects/aiai/Tests/index.html
+
+# Option B — serve it (required only if you want fetch()-style testing):
+cd ~/projects/aiai/Tests && python3 -m http.server 8765   # → http://localhost:8765
 ```
 
-(Everything works over `file://` too; fonts and Tailwind CDN for Concept 1 need internet.)
+Everything works over `file://`. Internet is needed for Google Fonts (all concepts) and
+the Tailwind CDN (Concept 1 only). All other concepts are dependency-free hand-written
+HTML/CSS/JS in a single `index.html` per folder.
 
-## The four concepts
+---
 
-| # | Folder | Concept | Brief |
-|---|--------|---------|-------|
-| 1 | `site-1-spectrum/` | **Full Spectrum** | Current visual identity kept (navy/cream/sage/gold, Tailwind). Copy, tone and structure reworked to address the full spectrum of business owners — three audience "doors" (small/local → growing → enterprise) mapped to the three service tiers. |
-| 2 | `site-2-organism/` | **The Organism** | The site as a living thing: canvas neural field that senses and reacts to the cursor (leans in, recoils when crowded), breathing headline gradient, heartbeat dividers, sections that "awaken" from blur, custom cursor halo, scroll filament. Copy reframed biologically (senses / digests / grows; a day in the organism's life). |
-| 2A | `site-2a-organism-daybreak/` | **Organism · Daybreak** | (Added 2026-06-11 on Adam's request for a friendlier flowing-colour version.) Same living field in a warm daylight palette: cream page with four large watercolour blooms (coral/lavender/sky/butter) drifting on 38–56s loops, warm coral/violet particles, gradient stat numbers. |
-| 2B | `site-2b-organism-aurora/` | **Organism · Aurora** | (Same request.) Soft twilight indigo with three northern-lights ribbons (teal/pink/gold) drawn on a low-res canvas behind a 46px blur, flowing continuously behind the neural field. Gentler than the original abyss, still nocturnal-magical. |
-| 3 | `site-3-clarity/` | **Clarity** | Current minimal-design trends: floating pill nav, one accent colour (cobalt), oversized Inter Tight type, bento stat grid, numbered steps, hover service rows, accordion FAQ, sticky mobile CTA. Shortest copy of the four. |
-| 4 | `site-4-machine/` | **The Machine That Builds It** | The wildcard. Boot sequence where the agent team wakes, then the page assembles itself (wireframe → painted, stamps snap on) while a live ops-feed dock narrates whichever section you're viewing, plus idle chatter. Evidence ledger, hover-to-declassify stats, decision trail. The medium proves the "we run our own AI team" message. |
-| 4A | `site-4a-machine-workshop/` | **Machine · Open Workshop** | (Added 2026-06-11 on Adam's request for an active, welcoming background.) Same boot/assembly/ops-feed mechanics, re-set in a warm workshop: deep plum-charcoal, blueprint grid drifting diagonally on a 70s loop, three breathing lamplight pools (amber/peach/violet), and ~90 rising embers that twinkle and drift toward the cursor ("moths to lamplight"). Copy warmed to match: /welcome, "WORKSHOP OPEN", "KETTLE ON" stamp. |
-| 6 | `site-6-beat-the-machine/` | **Beat the Machine** (playable argument) | (Added 2026-06-11 — Adam picked "things to play, not read" from my stretch list.) A 30-second inbox-triage game: 24 fictional-but-plausible emails for a Yorkshire hire firm, sorted Critical/Action/Info/Noise by tap or keys 1–4 while more keep arriving. Engineered moments: an HMRC-phishing trap that looks urgent, and a burst-pipe emergency dealt ~82% through the deck when the player is overwhelmed. Then the machine sorts the same 24 in 1.8s (scam quarantined, criticals "pinged your phone") and the verdict screen personalises callouts to what the player actually fooled/missed. "Watch instead" demo path, `?t=N` test hook for a shorter round, aria-live announcements. |
-| 5 | `site-5-greenhouse/` | **The Greenhouse** (finale) | (Added 2026-06-11 — Adam asked for an aggregation of Organism + Machine.) The synthesis metaphor: a machine built to grow living things. Germination boot (pulsing seed + crew lines), sections grow from dashed seed-outlines into glass panels ("GROWN ✓ / IN BLOOM"), an SVG vine grows down the left edge with scroll and sprouts a lit node+bud at each section, cursor-reactive firefly field (organism behaviour, workshop warmth), potting-bench ops feed, planting-record ledger, stats hidden under hover-away leaves, and the engagement gates reframed as seasons (Sow/Grow/Prune/Harvest). Palette: greenhouse night (#0d1714), leaf, pollen, lamp amber, bloom pink. |
+## 2. The concepts (in creation order)
 
-## Shared ground rules applied
+| # | Folder | Concept | One-line brief |
+|---|--------|---------|----------------|
+| 1 | `site-1-spectrum/` | **Full Spectrum** | Current brand identity kept (navy/cream/sage/gold, Tailwind CDN); copy/structure rebuilt around three audience doors (small/local → growing → enterprise) mapped to the three service tiers. |
+| 2 | `site-2-organism/` | **The Organism** | Adam's standout favourite. Dark bioluminescent canvas neural field that reacts to the cursor (leans in from afar, recoils up close), breathing headline gradient, heartbeat dividers, blur-awakening sections, cursor halo, scroll filament. Copy reframed biologically (senses / digests / grows). |
+| 2A | `site-2a-organism-daybreak/` | **Organism · Daybreak** | Friendlier flowing-colour variant: warm cream page, four large watercolour blooms (coral/lavender/sky/butter) drifting on 38–56s blur loops, coral/violet particles. |
+| 2B | `site-2b-organism-aurora/` | **Organism · Aurora** | Twilight variant: indigo night with three aurora ribbons (teal/pink/gold) drawn each frame on a 360×200 canvas scaled up behind `blur(46px)` — silky movement, near-zero cost. |
+| 3 | `site-3-clarity/` | **Clarity** | Minimal-trend build: floating pill nav, one cobalt accent, oversized type, bento stat grid, numbered steps, hover service rows, accordion FAQ, sticky mobile CTA. Shortest copy. |
+| 4 | `site-4-machine/` | **The Machine That Builds It** | Terminal boot where the agent team "wakes", sections assemble wireframe→painted with stamps, ops-feed dock narrates the section in view + idle chatter. Evidence ledger, hover-to-declassify stats, decision trail. |
+| 4A | `site-4a-machine-workshop/` | **Machine · Open Workshop** | Same mechanics, welcoming room: warm plum-charcoal, blueprint grid drifting on a 70s loop, three breathing lamplight pools, ~90 rising embers that drift toward the cursor. "KETTLE ON" register. |
+| 5 | `site-5-greenhouse/` | **The Greenhouse** (Organism × Machine synthesis) | Germination boot (pulsing seed), sections grow from seed-outline to glass panel ("GROWN ✓"), an SVG vine grows down the left edge with scroll and sprouts a node at each section, firefly field, potting-bench feed, seasons = Sow/Grow/Prune/Harvest. |
+| 6 | `site-6-beat-the-machine/` | **Beat the Machine** (playable argument) | 30-second inbox-triage game (details §4). |
+| 7 | `site-7-machine-live/` | **The Machine, Live** (real data) | Concept 4A driven by an allowlist extraction of Luna's real reports (details §5). |
 
-- All statistics restricted to the verified set from the live site (95% MIT NANDA, 80%/£78bn DSIT, 3.3% Yahoo Finance, 53% Cloudera).
-- No phrases from the Brand Bible "Messages We Never Use" list, even in the free-form concepts.
-- Real systems/cadences only (email triage every 30 min, Sunday 3am synthesis, etc.).
-- CTAs point at the live site's contact page / hello@adventuresinai.co.uk.
-- Each page carries a fixed "Concept N/4" badge linking back to the hub, and a footer note that it is not the live site.
-- `prefers-reduced-motion` respected on all animated concepts (2 and 4 degrade to static).
+Hub: `index.html` (cards for all of the above). Shared logos: `assets/img/`
+(copies from `Website-deploy/assets/img/`, referenced as `../assets/img/...`).
 
-## Assets
+---
 
-`assets/img/` contains copies of the wordmark/badge PNGs and favicon from `Website-deploy/assets/img/` — referenced as `../assets/img/...` from each concept folder.
+## 3. Ground rules every concept obeys
 
+- **Statistics**: only the verified set from the live site — 95% zero-value pilots (MIT NANDA),
+  80% UK non-adoption + £78bn gap (DSIT), 3.3% Copilot adoption (Yahoo Finance),
+  53% data-privacy blocker (Cloudera). No new numbers may be invented.
+- **Voice**: nothing from the Brand Bible "Messages We Never Use" list, even in concept pieces.
+- **Honesty**: real systems and cadences only (email triage every 30 min, Sunday 03:00 synthesis…).
+  Where data shows a flaw (amber health check, late brief), the concepts *display* it.
+- **CTAs** point at the live site contact page / hello@adventuresinai.co.uk. Test pages never
+  collect form data themselves.
+- Every page carries a fixed "Concept N" badge linking back to the hub and a footer note that
+  it is not the live site.
+- `prefers-reduced-motion` is respected everywhere (canvases freeze, boots skip, builds pre-built).
+- All pages were verified in headless Chrome via `agent-browser` (zero console errors at sign-off).
+
+---
+
+## 4. Concept 6 — Beat the Machine (how the game works)
+
+Single file: `site-6-beat-the-machine/index.html`. No dependencies, no network calls.
+
+- **Fiction**: visitor runs "Hartley's Hire & Supplies" (invented Yorkshire firm). 24 invented
+  emails — `EMAILS` array at the top of the inline script; each has a ground-truth category
+  (`critical|action|info|noise`) and flags (`scam`, `esc`, `late`).
+- **Round 1 (human)**: 30s timer; one email at a time; sort via buttons or keys `1–4`/`C A I N`;
+  queue refills faster than most people can sort (by design). Deal order is shuffled per play
+  but constrained: a critical lands in the first 4, the scam never lands first, the `late`
+  email (burst pipe) is inserted ~82% through the deck.
+- **Engineered moments**: HMRC-phishing email that *looks* urgent (most players file it
+  Critical/Action); burst-pipe emergency arriving at peak overwhelm (most never see it).
+- **Round 2 (machine)**: same 24 cascade into four columns in 1.8s; scam chip flagged
+  "quarantined", criticals "pinged your phone".
+- **Verdict**: personalised callouts driven by what actually happened (fooled by scam /
+  caught it / missed the pipe / misfiled it), score board, one closing paragraph, replay.
+- **Paths & hooks**: "I'd rather just watch" button = demo mode (machine round + generic
+  verdict). URL param `?t=N` (5–30) shortens the round for demos/testing,
+  e.g. `index.html?t=10`. `aria-live` announces new emails for screen readers.
+
+---
+
+## 5. Concept 7 — The Machine, Live (data pipeline runbook)
+
+Folder: `site-7-machine-live/` → `extract_pulse.py`, `index.html`, generated `pulse.json` + `pulse.js`.
+
+### Decision record (2026-06-11, Adam + Claude)
+- **Source: `~/Desktop/Luna Daily Reports/`** (morning brief, evening recap, health check,
+  plus neo-* / openclaw-news counted for cadence).
+- **`~/Desktop/Claude Oversight Reports/` is explicitly EXCLUDED and must never feed a public
+  page** — it contains launchd service maps, open-port findings, login history and risk
+  assessments. Do not "improve" this pipeline by adding it.
+
+### How the extractor works
+```bash
+python3 ~/projects/aiai/Tests/site-7-machine-live/extract_pulse.py            # extract + write
+python3 ~/projects/aiai/Tests/site-7-machine-live/extract_pulse.py --dry-run  # print only
+```
+1. **Allowlist only.** Every output field is a number (regex-captured digits), a count of
+   files/emoji, a file-mtime timestamp, or a hardcoded label. There is *no code path* that
+   copies free text from a report. The full schema is whatever you see in `pulse.json` —
+   that file is the complete universe of exposable data.
+2. **Deny-scan over the output** (belt and braces): email addresses, account-ID shapes,
+   IPs, filesystem paths, ports/endpoints, credential-ish words, plus `DENY_NAMES` (people,
+   clients, vendors, projects — list at the top of the script; **extend it whenever a new
+   client or sensitive project appears**). Any hit → prints the reason, leaves the previous
+   `pulse.json` untouched, exits 1.
+3. Writes both `pulse.json` (for inspection/CI) and `pulse.js` (`window.AIAI_PULSE = …`,
+   so the page works over `file://` without CORS issues).
+
+### How the page consumes it
+- `<script src="pulse.js">`; if absent/unloadable → **sample mode** with a peach
+  "SAMPLE DATA — FEED OFFLINE" stamp and adjusted copy. Never errors.
+- If `generated` is older than **36 hours** → amber "PULSE STALE — LAST Xh AGO" stamp;
+  the page admits staleness rather than pretending.
+- Data drives: brief gauges, recap triage bars, health traffic-lights (ambers warm a
+  background lamp), the 7-day shift log with real filing times (a morning brief filed
+  ≥ 09:00 is highlighted and triggers the "we show our own lateness" callout),
+  reports-per-day chart, boot lines, ops-feed lines, and ember count
+  (`30 + reports_this_week × 4`, capped 110).
+- The "What leaves the machine" section on the page publishes the data contract to visitors.
+
+### Refresh cadence & production path (NOT yet done — needs Adam's go)
+- Locally: re-run the extractor whenever you like; it's idempotent and read-only on sources.
+- To make the live site live: add a launchd job that runs the extractor after Luna's evening
+  recap (e.g. 21:15), then commits `pulse.json`/`pulse.js` into `Website-deploy/` and pushes
+  (Cloudflare Pages auto-deploys). **Do not set this up without Adam's explicit approval** —
+  he is evaluating data exposure locally first.
+
+---
+
+## 6. Verification & maintenance notes for agents
+
+- Verify any change with: `cd Tests && python3 -m http.server 8765`, then `agent-browser`
+  (installed globally; `agent-browser open … / screenshot / console`). Check console is clean.
+- Each concept is fully self-contained — copy a folder to fork a variant; update the hub
+  `index.html` card grid and this README table when you do.
+- Kieran: the claims worth auditing are all in §3; the game's emails (§4) are fiction and
+  must stay obviously fictional; §5's deny-list is the security-critical surface.
+- Session history and Adam's reactions are in Claude's memory
+  (`project_aiai_concept_lab.md`) and the `Claude/` transcripts folder.
