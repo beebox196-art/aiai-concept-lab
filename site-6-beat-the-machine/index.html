@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIAI — Concept 6: Beat the Machine | A Playable Argument</title>
+<meta name="description" content="Concept 6 — don't read the pitch, play it. Triage a chaotic Yorkshire inbox in 30 seconds, then watch the machine do the same morning in under two. The argument lands wordlessly.">
+<link rel="icon" type="image/x-icon" href="../assets/img/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+    --room:#171219;
+    --bench:#211a29;
+    --paper:#fbf7f1;
+    --paper-dim:#efe8df;
+    --ink:#2c2433;
+    --ink-soft:#6b6175;
+    --cream:#f2ece4;
+    --amber:#ffb454;
+    --crit:#e35d6a;
+    --act:#e9a23b;
+    --info:#5b8def;
+    --noise:#8d99ae;
+    --mint:#74e0a8;
+    --dim:#a698b2;
+    --hair:rgba(166,152,178,.22);
+    --mono:'JetBrains Mono',monospace;
+    --disp:'Space Grotesk',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+    background:var(--room);color:var(--cream);font-family:'Inter',system-ui,sans-serif;line-height:1.6;
+    overflow-x:hidden;
+}
+::selection{background:var(--amber);color:var(--room)}
+h1,h2,h3{font-family:var(--disp);letter-spacing:-.02em;line-height:1.1}
+button{font-family:inherit;cursor:pointer}
+
+/* warm room backdrop */
+.lamps{position:fixed;inset:0;z-index:0;pointer-events:none;filter:blur(90px)}
+.lamps i{position:absolute;border-radius:50%}
+.lamps .l1{width:50vw;height:50vw;background:radial-gradient(circle,rgba(255,180,84,.32),transparent 65%);top:-14%;right:-10%;animation:lampB 12s ease-in-out infinite}
+.lamps .l2{width:44vw;height:44vw;background:radial-gradient(circle,rgba(116,224,168,.16),transparent 65%);bottom:-16%;left:-8%;animation:lampB 15s ease-in-out infinite 5s}
+@keyframes lampB{0%,100%{opacity:.5}50%{opacity:.85}}
+.grain{
+    position:fixed;inset:-60px;z-index:0;pointer-events:none;
+    background-image:linear-gradient(rgba(255,200,140,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,200,140,.05) 1px,transparent 1px);
+    background-size:48px 48px;animation:grainDrift 80s linear infinite;
+}
+@keyframes grainDrift{to{transform:translate(48px,48px)}}
+@media(prefers-reduced-motion:reduce){.lamps i,.grain{animation:none}}
+
+.concept-tag{
+    position:fixed;bottom:1rem;left:1rem;z-index:95;text-decoration:none;
+    font-family:var(--mono);font-size:.68rem;color:var(--amber);
+    background:rgba(33,26,41,.92);border:1px solid rgba(255,180,84,.45);border-radius:999px;padding:.45rem .9rem;
+    backdrop-filter:blur(6px);
+}
+
+/* stage */
+.stage{position:relative;z-index:2;max-width:780px;margin:0 auto;padding:1.2rem 1.2rem 4rem;min-height:100vh;display:flex;flex-direction:column}
+.brandbar{display:flex;align-items:center;justify-content:space-between;padding:.6rem 0 1.6rem}
+.brandbar img{height:26px;opacity:.9}
+.brandbar span{font-family:var(--mono);font-size:.7rem;color:var(--dim);letter-spacing:.14em}
+
+.screen{display:none;flex:1;flex-direction:column;justify-content:center;animation:scrIn .5s ease}
+.screen.on{display:flex}
+@keyframes scrIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.screen{animation:none}}
+
+/* ============ INTRO ============ */
+#intro h1{font-size:clamp(2.2rem,7vw,3.8rem);margin-bottom:1.1rem}
+#intro h1 em{font-style:normal;color:var(--amber)}
+#intro .scene{
+    background:rgba(33,26,41,.7);border:1px solid var(--hair);border-radius:16px;padding:1.5rem 1.6rem;
+    margin:1.4rem 0 1.8rem;max-width:34rem;
+}
+#intro .scene p{color:var(--dim);font-size:.98rem}
+#intro .scene b{color:var(--cream)}
+#intro .rules{font-family:var(--mono);font-size:.8rem;color:var(--dim);margin-bottom:2rem;line-height:2}
+#intro .rules .k{display:inline-block;min-width:1.5em;text-align:center;border:1px solid var(--hair);border-radius:5px;padding:0 .3em;margin-right:.35em;color:var(--cream)}
+.btn{
+    display:inline-flex;align-items:center;gap:.6rem;padding:1rem 2rem;border-radius:999px;border:none;
+    font-weight:700;font-size:1rem;text-decoration:none;font-family:var(--disp);
+    transition:transform .15s,box-shadow .2s;
+}
+.btn:active{transform:scale(.97)}
+.btn-go{background:linear-gradient(110deg,var(--amber),#ff9d7a);color:var(--room);box-shadow:0 14px 40px -14px rgba(255,180,84,.6)}
+.btn-go:hover{transform:translateY(-2px)}
+.btn-quiet{background:none;border:1px solid var(--hair);color:var(--dim);font-size:.9rem;font-weight:500}
+.btn-quiet:hover{color:var(--cream);border-color:var(--dim)}
+.introacts{display:flex;gap:1rem;flex-wrap:wrap;align-items:center}
+
+/* ============ GAME ============ */
+#hud{display:flex;align-items:center;gap:1.2rem;margin-bottom:1.2rem}
+#timerwrap{position:relative;width:74px;height:74px;flex-shrink:0}
+#timerwrap svg{transform:rotate(-90deg)}
+#timerwrap .tbg{fill:none;stroke:rgba(255,255,255,.08);stroke-width:5}
+#timerwrap .tfg{fill:none;stroke:var(--mint);stroke-width:5;stroke-linecap:round;transition:stroke .3s}
+#timerwrap.warn .tfg{stroke:var(--amber)}
+#timerwrap.panic .tfg{stroke:var(--crit)}
+#tnum{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:1.25rem;font-weight:700}
+.hudstats{display:flex;gap:1.6rem;font-family:var(--mono);font-size:.78rem;color:var(--dim)}
+.hudstats b{display:block;font-size:1.3rem;color:var(--cream);font-family:var(--disp)}
+#queuechip{margin-left:auto;font-family:var(--mono);font-size:.75rem;color:var(--room);background:var(--amber);border-radius:999px;padding:.35rem .8rem;font-weight:700;transition:transform .15s}
+#queuechip.bump{transform:scale(1.18)}
+#queuechip.heavy{background:var(--crit);color:#fff}
+
+/* the focus email */
+#card{
+    background:var(--paper);color:var(--ink);border-radius:18px;padding:1.6rem 1.7rem;
+    box-shadow:0 30px 70px -30px rgba(0,0,0,.75);
+    min-height:185px;position:relative;
+}
+#card.slide{animation:cardIn .22s ease}
+@keyframes cardIn{from{opacity:0;transform:translateX(26px) rotate(.6deg)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){#card.slide{animation:none}}
+#card .from{font-family:var(--mono);font-size:.74rem;color:var(--ink-soft);margin-bottom:.5rem;word-break:break-all}
+#card .subj{font-family:var(--disp);font-weight:700;font-size:1.25rem;line-height:1.25;margin-bottom:.6rem}
+#card .prev{font-size:.95rem;color:var(--ink-soft)}
+#card .attach{display:inline-block;margin-top:.7rem;font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);border:1px solid #ddd4c8;border-radius:6px;padding:.15rem .5rem}
+
+/* sort buttons */
+#sorts{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;margin-top:1rem}
+.sort{
+    border:none;border-radius:14px;padding:.95rem .4rem .8rem;color:#fff;font-weight:700;font-size:.95rem;
+    font-family:var(--disp);display:flex;flex-direction:column;align-items:center;gap:.15rem;
+    transition:transform .12s,filter .2s;
+}
+.sort small{font-family:var(--mono);font-weight:400;font-size:.62rem;opacity:.75}
+.sort:hover{transform:translateY(-3px);filter:brightness(1.1)}
+.sort:active{transform:scale(.95)}
+.s-crit{background:var(--crit)} .s-act{background:var(--act)} .s-info{background:var(--info)} .s-noise{background:var(--noise)}
+@media(max-width:560px){.sort{font-size:.8rem;padding:.8rem .3rem .65rem}}
+
+/* ============ INTERLUDE / MACHINE / VERDICT shared ============ */
+.kicker{font-family:var(--mono);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);margin-bottom:.9rem}
+.bigline{font-size:clamp(1.8rem,5.5vw,2.9rem);margin-bottom:1rem}
+.sub{color:var(--dim);max-width:34rem;margin-bottom:1.6rem}
+
+/* machine round */
+#mclock{font-family:var(--mono);font-size:2.4rem;font-weight:700;color:var(--mint);margin-bottom:1.2rem}
+#mclock small{font-size:.9rem;color:var(--dim);font-weight:400}
+#cols{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.7rem}
+.col{background:rgba(33,26,41,.7);border:1px solid var(--hair);border-radius:14px;padding:.8rem .7rem;min-height:240px;min-width:0}
+.col h4{font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;display:flex;justify-content:space-between;margin-bottom:.7rem}
+.col .cnt{color:var(--cream)}
+.col-crit h4{color:var(--crit)} .col-act h4{color:var(--act)} .col-info h4{color:var(--info)} .col-noise h4{color:var(--noise)}
+.chip{
+    font-size:.66rem;font-family:var(--mono);line-height:1.4;background:var(--paper);color:var(--ink);
+    border-radius:7px;padding:.3rem .45rem;margin-bottom:.4rem;
+    opacity:0;transform:translateY(-8px) scale(.92);
+    transition:opacity .25s,transform .25s;
+    overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
+}
+.chip.in{opacity:1;transform:none}
+.chip.flag{background:#3d2030;color:#ffb3c0;border:1px solid var(--crit)}
+.chip.esc{background:#1d3528;color:var(--mint);border:1px solid var(--mint)}
+@media(max-width:560px){.col{min-height:200px}.chip{font-size:.58rem}}
+
+/* verdict */
+.board{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin:1.6rem 0}
+.side{background:rgba(33,26,41,.75);border:1px solid var(--hair);border-radius:16px;padding:1.4rem}
+.side.machine{border-color:rgba(116,224,168,.45)}
+.side h3{font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-bottom:1rem}
+.side.machine h3{color:var(--mint)}
+.side .row{display:flex;justify-content:space-between;gap:.6rem;font-size:.86rem;padding:.45rem 0;border-bottom:1px solid var(--hair)}
+.side .row:last-child{border-bottom:none}
+.side .row b{font-family:var(--mono);white-space:nowrap}
+.side .row span{color:var(--dim)}
+.side.machine .row b{color:var(--mint)}
+@media(max-width:560px){.board{grid-template-columns:1fr}}
+.callout{
+    border-radius:14px;padding:1.1rem 1.3rem;margin:.6rem 0;font-size:.92rem;
+    background:rgba(227,93,106,.12);border:1px solid rgba(227,93,106,.45);
+}
+.callout.good{background:rgba(116,224,168,.1);border-color:rgba(116,224,168,.45)}
+.callout b{display:block;font-family:var(--disp);margin-bottom:.25rem}
+.callout span{color:var(--dim);font-size:.86rem}
+.moral{margin:1.8rem 0 2rem;max-width:36rem;font-size:1.05rem;line-height:1.75}
+.moral em{font-style:normal;color:var(--amber)}
+.endacts{display:flex;gap:1rem;flex-wrap:wrap;align-items:center}
+
+footer{position:relative;z-index:2;font-family:var(--mono);font-size:.7rem;color:var(--dim);text-align:center;padding:0 1rem 2rem}
+footer a{color:var(--amber);text-decoration:none}
+
+.srlive{position:absolute;left:-9999px}
+</style>
+</head>
+<body>
+
+<div class="lamps" aria-hidden="true"><i class="l1"></i><i class="l2"></i></div>
+<div class="grain" aria-hidden="true"></div>
+<a class="concept-tag" href="../index.html">CONCEPT 6 · BEAT THE MACHINE — a playable argument</a>
+<div class="srlive" aria-live="polite" id="srlive"></div>
+
+<div class="stage">
+    <div class="brandbar">
+        <img src="../assets/img/aiai-wordmark-white-transparent.png" alt="AIAI — Adventures in AI">
+        <span>HARTLEY'S HIRE &amp; SUPPLIES · TUE 11:02</span>
+    </div>
+
+    <!-- ============ INTRO ============ -->
+    <section class="screen on" id="intro">
+        <h1>Your inbox. 30 seconds.<br><em>Beat the machine.</em></h1>
+        <div class="scene">
+            <p>You run <b>Hartley's Hire &amp; Supplies</b> — tools, plant and timber, somewhere off the A61.
+            You've been in meetings since eight. Your inbox has not.
+            Somewhere in there: a customer about to walk, a scam dressed as urgent, and one genuine emergency.</p>
+        </div>
+        <p class="rules">
+            sort each email → <span class="k">1</span>Critical <span class="k">2</span>Action <span class="k">3</span>Info <span class="k">4</span>Noise<br>
+            keys or taps both work · they keep arriving · nobody finishes
+        </p>
+        <div class="introacts">
+            <button class="btn btn-go" id="startBtn">Start the clock ▸</button>
+            <button class="btn btn-quiet" id="demoBtn">I'd rather just watch the machine</button>
+        </div>
+    </section>
+
+    <!-- ============ GAME ============ -->
+    <section class="screen" id="game" aria-label="Inbox triage game">
+        <div id="hud">
+            <div id="timerwrap">
+                <svg width="74" height="74" viewBox="0 0 74 74">
+                    <circle class="tbg" cx="37" cy="37" r="32"/>
+                    <circle class="tfg" id="tfg" cx="37" cy="37" r="32"/>
+                </svg>
+                <div id="tnum">30</div>
+            </div>
+            <div class="hudstats">
+                <div><b id="hudSorted">0</b>sorted</div>
+                <div><b id="hudWait">0</b>waiting</div>
+            </div>
+            <div id="queuechip">inbox live</div>
+        </div>
+        <div id="card" aria-live="polite">
+            <div class="from" id="cFrom"></div>
+            <div class="subj" id="cSubj"></div>
+            <div class="prev" id="cPrev"></div>
+        </div>
+        <div id="sorts">
+            <button class="sort s-crit" data-cat="critical">Critical<small>[1] drop everything</small></button>
+            <button class="sort s-act" data-cat="action">Action<small>[2] needs me today</small></button>
+            <button class="sort s-info" data-cat="info">Info<small>[3] good to know</small></button>
+            <button class="sort s-noise" data-cat="noise">Noise<small>[4] bin it</small></button>
+        </div>
+    </section>
+
+    <!-- ============ INTERLUDE ============ -->
+    <section class="screen" id="interlude">
+        <p class="kicker">time's up</p>
+        <h2 class="bigline" id="intHead">Pens down.</h2>
+        <p class="sub" id="intSub"></p>
+        <div>
+            <button class="btn btn-go" id="machineBtn">Now watch the machine do the same morning ▸</button>
+        </div>
+    </section>
+
+    <!-- ============ MACHINE ROUND ============ -->
+    <section class="screen" id="machine">
+        <p class="kicker">same 24 emails · same morning</p>
+        <div id="mclock">0.00<small> s</small></div>
+        <div id="cols">
+            <div class="col col-crit"><h4>critical <span class="cnt" id="nCrit">0</span></h4><div id="colCrit"></div></div>
+            <div class="col col-act"><h4>action <span class="cnt" id="nAct">0</span></h4><div id="colAct"></div></div>
+            <div class="col col-info"><h4>info <span class="cnt" id="nInfo">0</span></h4><div id="colInfo"></div></div>
+            <div class="col col-noise"><h4>noise <span class="cnt" id="nNoise">0</span></h4><div id="colNoise"></div></div>
+        </div>
+    </section>
+
+    <!-- ============ VERDICT ============ -->
+    <section class="screen" id="verdict">
+        <p class="kicker">the verdict</p>
+        <h2 class="bigline" id="vHead"></h2>
+        <div class="board">
+            <div class="side">
+                <h3 id="vYouLabel">you</h3>
+                <div class="row"><span>emails sorted</span><b id="vSorted">—</b></div>
+                <div class="row"><span>sorted correctly</span><b id="vCorrect">—</b></div>
+                <div class="row"><span>avg. decision time</span><b id="vAvg">—</b></div>
+                <div class="row"><span>your attention used</span><b>30 s, all of it</b></div>
+                <div class="row"><span>does it again at 11:32</span><b>you, again</b></div>
+            </div>
+            <div class="side machine">
+                <h3>the machine</h3>
+                <div class="row"><span>emails sorted</span><b>24 / 24</b></div>
+                <div class="row"><span>sorted correctly</span><b>24, scam flagged</b></div>
+                <div class="row"><span>total time</span><b>1.8 s</b></div>
+                <div class="row"><span>your attention used</span><b>none</b></div>
+                <div class="row"><span>does it again at 11:32</span><b>and 12:02, forever</b></div>
+            </div>
+        </div>
+        <div id="callouts"></div>
+        <p class="moral" id="vMoral"></p>
+        <div class="endacts">
+            <a class="btn btn-go" href="https://adventuresinai.co.uk/contact.html">See it run on a real business ▸</a>
+            <button class="btn btn-quiet" id="againBtn">Play again</button>
+        </div>
+    </section>
+</div>
+
+<footer>concept 6 of the aiai lab — a playable argument · not the live site · <a href="https://adventuresinai.co.uk">adventuresinai.co.uk</a></footer>
+
+<script>
+(() => {
+/* ===================== the morning's post ===================== */
+/* truth: critical | action | info | noise.  note: used in verdict & machine flags */
+const EMAILS = [
+ {f:'Dev (counter) <dev@hartleys.co.uk>', s:"Card machine's down AGAIN", p:'Queue out the door, customers walking out. I\'m taking cash only. HELP.', t:'critical', tag:'card machine down', esc:true},
+ {f:'Graham Whitfield <g.whitfield@whitfieldconstruction.co.uk>', s:'Re: our account — considering moving suppliers', p:'Third late delivery this month, Dave. Call me before 2pm or we move to Travis.', t:'critical', tag:'biggest client walking', esc:true},
+ {f:'Aviva Business <no-reply@aviva.co.uk>', s:'URGENT: payment failed — cover lapses at midnight', p:'Your public liability policy will lapse tonight unless payment is updated.', t:'critical', tag:'insurance lapsing', esc:true},
+ {f:'Karen (yard) <karen@hartleys.co.uk>', s:'Burst pipe in the warehouse!!', p:'Water coming through near the electrics. I\'ve shut the stopcock — need a decision on the stock NOW.', t:'critical', tag:'burst pipe', esc:true, late:true},
+ {f:'Sam Ellison <sam@ellisongroundworks.co.uk>', s:'Quote needed today — 40 acrow props + mixer, 6 wks', p:'New site in Leeds starting Monday. Whoever quotes first probably gets it.', t:'action', tag:'hot new lead'},
+ {f:'Howarth Timber <accounts@howarthtimber.co.uk>', s:'Invoice 4471 — 30 days overdue, final reminder', p:'Account will be placed on hold if payment is not received this week.', t:'action', tag:'supplier final reminder'},
+ {f:'Becky <becky@hartleys.co.uk>', s:'Holiday request — w/c the 14th', p:'Mum\'s 70th. Can you confirm so I can book the cottage?', t:'action', tag:'staff holiday'},
+ {f:'Mark Trafford <mtrafford@gmail.com>', s:'Generator you hired me cut out twice', p:'Saturday job overran because of it. I think a partial refund is fair. Call me.', t:'action', tag:'customer complaint'},
+ {f:'Priya (accountant) <priya@nblaccounts.co.uk>', s:'VAT return due Friday — still missing June receipts', p:'Send them over by Wednesday or we\'ll be filing late.', t:'action', tag:'VAT deadline'},
+ {f:'Arnold Laver <sales@arnoldlaver.co.uk>', s:'Price increase notice: timber +8% from 1 July', p:'Lock in current rates on forward orders until Thursday.', t:'action', tag:'price rise window'},
+ {f:'Website <forms@hartleys.co.uk>', s:'New enquiry via website', p:'"Hi — do you deliver tool hire to Harrogate? Need a breaker this weekend."', t:'action', tag:'website lead'},
+ {f:'Barclays <statements@barclays.co.uk>', s:'Your June statement is ready', p:'Log in to view your statement for account ending 4471.', t:'info', tag:''},
+ {f:'DPD <despatch@dpd.co.uk>', s:'Order #88231 dispatched', p:'Your consignment of 12 items is on its way. Track here.', t:'info', tag:''},
+ {f:'Hire Association Europe <news@hae.org.uk>', s:'HAE weekly: plant theft up 12% in Yorkshire', p:'Plus: new towing regs explained, member offers inside.', t:'info', tag:''},
+ {f:'Xero <receipts@xero.com>', s:'Your subscription has renewed — receipt attached', p:'Payment of £33.00 taken on 9 June.', t:'info', tag:''},
+ {f:'Harrogate BC <highways@harrogate.gov.uk>', s:'Roadworks: Mill Lane from Monday', p:'Temporary lights for 3 weeks. Business access will be maintained.', t:'info', tag:''},
+ {f:'YorTrain <bookings@yortrain.co.uk>', s:'Confirmed: forklift refresher, Thursday 9am', p:'Two delegates booked. Bring photo ID and boots.', t:'info', tag:''},
+ {f:'HM Revenue & Customs <refunds@hmrc-gov-claims.net>', s:'You are owed £1,342.20 — claim within 24 hours', p:'Our records show an overpayment. Verify your bank details immediately to receive your refund.', t:'noise', tag:'PHISHING', scam:true},
+ {f:'LinkedIn <messages-noreply@linkedin.com>', s:'You appeared in 9 searches this week', p:'See who\'s looking at your profile with Premium.', t:'noise', tag:''},
+ {f:'CoinVault Pro <winners@coinvault-pro.io>', s:'Bitcoin is going parabolic — last chance', p:'Our AI trading bot turned £250 into £19,000 for a builder in Hull.', t:'noise', tag:''},
+ {f:'Vehicle Cover UK <final-notice@vcover-uk.net>', s:'FINAL CHANCE: extend your van warranty', p:'Your coverage may have expired. Act now to avoid repair bills.', t:'noise', tag:''},
+ {f:'Raj P. <raj.seo.expert.99@gmail.com>', s:'I noticed your website isn\'t ranking on Google', p:'Dear sir, we can put you on page 1 guaranteed. Very cheap price. Kindly revert.', t:'noise', tag:''},
+ {f:'GrowthCon <events@growthcon.biz>', s:'FREE webinar: 10 AI hacks to 10x your business!', p:'Join 4,000 founders learning the secrets gurus won\'t tell you.', t:'noise', tag:''},
+ {f:'Prize Notification <claims@uk-prize-centre.com>', s:'Congratulations! You have been selected', p:'You are one of three lucky winners in your area. Claim within 48 hours.', t:'noise', tag:''},
+];
+const TOTAL = EMAILS.length;       // 24
+const COUNTS = {critical:4, action:7, info:6, noise:7};
+
+/* test hook: ?t=8 shortens the round */
+const GAME_SECONDS = Math.max(5, Math.min(30, parseInt(new URLSearchParams(location.search).get('t')) || 30));
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* arrival order: criticals 1-3 early-ish, burst pipe (late:true) near the end */
+function dealOrder() {
+    const late = EMAILS.filter(e => e.late);
+    const rest = EMAILS.filter(e => !e.late);
+    // shuffle rest
+    for (let i=rest.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[rest[i],rest[j]]=[rest[j],rest[i]];}
+    // ensure the scam isn't first (let them settle in), and a critical appears in first 4
+    const scamIx = rest.findIndex(e=>e.scam);
+    if (scamIx === 0) [rest[0],rest[5]] = [rest[5],rest[0]];
+    const firstCrit = rest.findIndex(e=>e.t==='critical');
+    if (firstCrit > 3) [rest[2],rest[firstCrit]] = [rest[firstCrit],rest[2]];
+    // burst pipe arrives ~80% through the deck
+    const order = rest.slice();
+    order.splice(Math.floor(order.length*.82), 0, ...late);
+    return order;
+}
+
+/* ===================== state ===================== */
+let order=[], queue=[], current=null, sorted=[], timeLeft=GAME_SECONDS;
+let tickIv=null, dealIv=null, decisionStart=0, decisionTimes=[];
+const $ = id => document.getElementById(id);
+const screens = ['intro','game','interlude','machine','verdict'];
+function show(id){ screens.forEach(s => $(s).classList.toggle('on', s===id)); }
+const say = t => { $('srlive').textContent = t; };
+
+/* ===================== game round ===================== */
+const R = 32, CIRC = 2*Math.PI*R;
+$('tfg').style.strokeDasharray = CIRC;
+
+function startGame() {
+    order = dealOrder();
+    queue = []; sorted = []; current = null; decisionTimes = [];
+    timeLeft = GAME_SECONDS;
+    $('hudSorted').textContent = 0;
+    show('game');
+    // pre-load a small pile, then drip the rest across the round
+    queue.push(...order.splice(0,4));
+    nextCard();
+    const dealEvery = (GAME_SECONDS*1000 - 2500) / order.length;
+    dealIv = setInterval(() => {
+        if (!order.length) { clearInterval(dealIv); return; }
+        queue.push(order.shift());
+        bumpQueue();
+        if (!current) nextCard();
+    }, dealEvery);
+    tickIv = setInterval(() => {
+        timeLeft -= .1;
+        if (timeLeft <= 0) { timeLeft = 0; endGame(); }
+        renderTimer();
+    }, 100);
+    renderTimer();
+}
+function renderTimer() {
+    const p = timeLeft/GAME_SECONDS;
+    $('tfg').style.strokeDashoffset = CIRC*(1-p);
+    $('tnum').textContent = Math.ceil(timeLeft);
+    const w = $('timerwrap');
+    w.classList.toggle('warn', timeLeft<=15 && timeLeft>7);
+    w.classList.toggle('panic', timeLeft<=7);
+}
+function bumpQueue() {
+    const n = queue.length + (current?0:0);
+    const chip = $('queuechip');
+    chip.textContent = n > 0 ? `+${n} waiting` : 'inbox live';
+    chip.classList.toggle('heavy', n >= 6);
+    chip.classList.remove('bump'); void chip.offsetWidth; chip.classList.add('bump');
+    $('hudWait').textContent = n;
+}
+function nextCard() {
+    current = queue.shift() || null;
+    bumpQueue();
+    const card = $('card');
+    if (!current) {
+        $('cFrom').textContent = '';
+        $('cSubj').textContent = 'Inbox clear. For now…';
+        $('cPrev').textContent = 'Breathe. Something will arrive.';
+        return;
+    }
+    card.classList.remove('slide'); void card.offsetWidth; card.classList.add('slide');
+    $('cFrom').textContent = current.f;
+    $('cSubj').textContent = current.s;
+    $('cPrev').textContent = current.p;
+    decisionStart = performance.now();
+    say(`New email from ${current.f.split('<')[0]}: ${current.s}`);
+}
+function sortCurrent(cat) {
+    if (!current) return;
+    decisionTimes.push(performance.now() - decisionStart);
+    sorted.push({e: current, chose: cat, ok: current.t === cat});
+    $('hudSorted').textContent = sorted.length;
+    nextCard();
+}
+$('sorts').addEventListener('click', e => {
+    const b = e.target.closest('.sort'); if (b) sortCurrent(b.dataset.cat);
+});
+addEventListener('keydown', e => {
+    if (!$('game').classList.contains('on')) return;
+    const map = {'1':'critical','2':'action','3':'info','4':'noise',
+                 'c':'critical','a':'action','i':'info','n':'noise'};
+    if (map[e.key]) sortCurrent(map[e.key]);
+});
+
+function endGame() {
+    clearInterval(tickIv); clearInterval(dealIv);
+    const unseen = [...queue, ...order, ...(current?[current]:[])];
+    window.RESULT = analyse(sorted, unseen);
+    const r = window.RESULT;
+    $('intHead').textContent = r.sortedN >= 16 ? 'Quick hands. Seriously.' :
+                               r.sortedN >= 9  ? 'Pens down. That was real life.' :
+                                                 "It's relentless, isn't it?";
+    $('intSub').textContent = `You sorted ${r.sortedN} of ${TOTAL} emails — ${r.correctN} into the right pile. ${r.unseenN} arrived that you never even saw. Hold that feeling.`;
+    show('interlude');
+}
+
+function analyse(sorted, unseen) {
+    const correctN = sorted.filter(s=>s.ok).length;
+    const wrong = sorted.filter(s=>!s.ok);
+    const scamSorted = sorted.find(s=>s.e.scam);
+    const scamFooled = scamSorted && (scamSorted.chose==='critical'||scamSorted.chose==='action');
+    const scamCaught = scamSorted && scamSorted.chose==='noise';
+    const pipe = EMAILS.find(e=>e.late);
+    const pipeMissed = unseen.includes(pipe);
+    const pipeWrong = sorted.find(s=>s.e.late && !s.ok);
+    const missedCrit = unseen.filter(e=>e.t==='critical');
+    const avg = decisionTimes.length ? (decisionTimes.reduce((a,b)=>a+b,0)/decisionTimes.length/1000) : 0;
+    return {sortedN:sorted.length, correctN, wrong, unseenN:unseen.length,
+            scamFooled, scamCaught, pipeMissed, pipeWrong, missedCrit, avg, played:true};
+}
+
+/* ===================== machine round ===================== */
+$('machineBtn').addEventListener('click', () => runMachine());
+$('demoBtn').addEventListener('click', () => {
+    window.RESULT = {played:false};
+    runMachine();
+});
+function runMachine() {
+    show('machine');
+    ['colCrit','colAct','colInfo','colNoise'].forEach(id => $(id).innerHTML='');
+    const cnts = {critical:0, action:0, info:0, noise:0};
+    const colFor = {critical:'colCrit', action:'colAct', info:'colInfo', noise:'colNoise'};
+    const cntFor = {critical:'nCrit', action:'nAct', info:'nInfo', noise:'nNoise'};
+    const STEP = reduce ? 0 : 72;                 // ms per email
+    const clock = $('mclock');
+    let start = performance.now();
+    let clockIv = setInterval(() => {
+        const el = Math.min(1.8, (performance.now()-start)/1000);
+        clock.innerHTML = el.toFixed(2)+'<small> s</small>';
+        if (el >= 1.8) clearInterval(clockIv);
+    }, 30);
+    EMAILS.forEach((e, i) => {
+        setTimeout(() => {
+            const chip = document.createElement('div');
+            chip.className = 'chip' + (e.scam ? ' flag' : e.esc ? ' esc' : '');
+            chip.textContent = e.scam ? '⚠ '+e.s+' — quarantined' :
+                               e.esc  ? '➤ '+e.s+' — pinged your phone' : e.s;
+            chip.title = e.s;
+            $(colFor[e.t]).appendChild(chip);
+            requestAnimationFrame(()=>requestAnimationFrame(()=>chip.classList.add('in')));
+            cnts[e.t]++; $(cntFor[e.t]).textContent = cnts[e.t];
+        }, i*STEP);
+    });
+    setTimeout(showVerdict, EMAILS.length*STEP + 1400);
+}
+
+/* ===================== verdict ===================== */
+function showVerdict() {
+    const r = window.RESULT || {played:false};
+    show('verdict');
+    const co = $('callouts'); co.innerHTML='';
+    if (!r.played) {
+        $('vHead').textContent = 'It did your whole morning while you watched.';
+        $('vYouLabel').textContent = 'a typical owner';
+        $('vSorted').textContent = '~11 / 24';
+        $('vCorrect').textContent = '~8';
+        $('vAvg').textContent = '~1.9 s';
+        $('vMoral').innerHTML = moralLine();
+        return;
+    }
+    $('vSorted').textContent = `${r.sortedN} / ${TOTAL}`;
+    $('vCorrect').textContent = `${r.correctN}`;
+    $('vAvg').textContent = r.avg ? r.avg.toFixed(1)+' s' : '—';
+    $('vHead').textContent =
+        r.sortedN >= 16 && r.correctN/r.sortedN >= .8 ? "You'd make a decent email machine. But you're the owner." :
+        r.sortedN >= 9 ? 'You did fine. "Fine" is the expensive part.' :
+        'Nobody beats the machine. That\'s the point.';
+    // the scam
+    if (r.scamFooled) co.insertAdjacentHTML('beforeend',
+        `<div class="callout"><b>That HMRC refund? A scam — and you filed it as ${'urgent'}.</b><span>It looked critical. They always do. The machine pattern-matched the sender domain and quarantined it in 0.07s.</span></div>`);
+    else if (r.scamCaught) co.insertAdjacentHTML('beforeend',
+        `<div class="callout good"><b>You spotted the HMRC scam. Genuinely well done.</b><span>Under time pressure, most people don't. The machine catches it every time — including the days you're tired.</span></div>`);
+    // the burst pipe
+    if (r.pipeMissed) co.insertAdjacentHTML('beforeend',
+        `<div class="callout"><b>The warehouse pipe burst at the busiest moment. You never saw it.</b><span>It arrived while you were ${r.scamFooled ? 'dealing with a fake tax refund' : 'buried in van-warranty spam'}. In real life it waits hours. The machine escalated it to your phone in seconds.</span></div>`);
+    else if (r.pipeWrong) co.insertAdjacentHTML('beforeend',
+        `<div class="callout"><b>The burst pipe got filed under "${r.pipeWrong.chose}".</b><span>Water near the electrics, misfiled at speed. No judgement — that's what 30 seconds of pressure does to good judgement.</span></div>`);
+    if (r.missedCrit.length && !r.pipeMissed) co.insertAdjacentHTML('beforeend',
+        `<div class="callout"><b>${r.missedCrit.length} critical email${r.missedCrit.length>1?'s':''} never reached you.</b><span>${r.missedCrit.map(e=>'“'+e.s+'”').join(' · ')}</span></div>`);
+    if (r.wrong.length && !r.scamFooled && !r.pipeWrong) co.insertAdjacentHTML('beforeend',
+        `<div class="callout"><b>${r.wrong.length} ended up in the wrong pile.</b><span>Speed has a price. The machine's error rate on this morning: zero — and when it is genuinely unsure, it asks a human instead of guessing.</span></div>`);
+    $('vMoral').innerHTML = moralLine();
+}
+function moralLine() {
+    return `That was <em>one inbox, once</em>. Our own system has been doing this every 30 minutes — including all the way through this game — and email is just one of its jobs. The reports, the research, the follow-ups: same machine, same patience. You got 30 seconds of it. <em>Your business would get all day.</em>`;
+}
+
+/* ===================== wiring ===================== */
+$('startBtn').addEventListener('click', startGame);
+$('againBtn').addEventListener('click', () => { show('intro'); });
+})();
+</script>
+</body>
+</html>
