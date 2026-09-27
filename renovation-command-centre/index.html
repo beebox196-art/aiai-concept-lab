@@ -302,6 +302,22 @@ section{padding:44px 0 8px;scroll-margin-top:calc(var(--nav-h) + 10px)}
 .room-foot{display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:12px;border-top:1px solid var(--line-soft);font-size:11.5px;color:var(--ink-faint)}
 .room-foot b{color:var(--ink-soft)}
 
+/* room inspiration */
+.insp{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line-soft)}
+.insp-h{display:flex;align-items:center;gap:7px;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--copper);font-weight:600;cursor:pointer;background:none;border:0;padding:2px 0;width:100%;text-align:left}
+.insp-h .chev{margin-left:auto;transition:transform .2s;font-size:10px;color:var(--ink-faint)}
+.insp[open] .insp-h .chev{transform:rotate(90deg)}
+.insp-h:hover{color:var(--brick)}
+.insp-list{display:flex;flex-direction:column;gap:6px;margin-top:9px}
+.insp-list a{display:flex;align-items:center;gap:8px;justify-content:space-between;font-size:11.5px;text-decoration:none;color:var(--ink-soft);padding:5px 8px;border-radius:7px;border:1px solid var(--line-soft);transition:border-color .14s,background .14s,color .14s}
+.insp-list a:hover{border-color:var(--copper);background:var(--copper-soft);color:var(--copper)}
+.insp-list a .dot2{width:6px;height:6px;border-radius:50%;background:var(--copper);flex:none}
+.insp-list a .why{margin-left:auto;font-size:10px;color:var(--ink-faint);text-align:right;white-space:nowrap;background:var(--line-soft);padding:2px 7px;border-radius:var(--r-pill);flex:none}
+.insp-list a:hover .why{color:var(--copper);background:var(--copper-soft)}
+.insp-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+.insp-tags a{font-size:10.5px;padding:3px 9px;border-radius:var(--r-pill);background:var(--line-soft);color:var(--ink-soft);text-decoration:none;border:1px solid transparent}
+.insp-tags a:hover{background:var(--copper-soft);color:var(--copper);border-color:var(--copper)}
+
 /* kanban */
 .kanban{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:16px}
 .kcol{background:color-mix(in srgb,var(--card) 60%,transparent);border:1px solid var(--line-soft);border-radius:var(--r);padding:12px}
@@ -405,6 +421,7 @@ footer b{color:var(--ink-soft)}
 }
 @media (max-width:720px){
   .g-2,.g-3,.g-4,.g-auto{grid-template-columns:1fr}
+  .insp-list a .why{display:none}
   .kanban{grid-template-columns:1fr}
   .masonry{columns:1}
   .gantt-scale{padding-left:0;grid-template-columns:repeat(6,1fr)}
@@ -669,6 +686,13 @@ footer b{color:var(--ink-soft)}
         <li><span class="tick"></span>Final plumbing &amp; appliances</li>
       </ul>
       <div class="room-foot"><span><b>£21,500</b> budget</span><span>Due 28 Jul</span></div>
+      <details class="insp"><summary class="insp-h">✦ Inspiration for this room<span class="chev">▸</span></summary><div class="insp-list">
+        <a href="https://www.houseandgarden.co.uk/gallery/kitchen-ideas" target="_blank" rel="noopener"><span class="dot2"></span>House &amp; Garden — Kitchen ideas<span class="why">UK, aspirational</span></a>
+        <a href="https://www.idealhome.co.uk/all-rooms/kitchen" target="_blank" rel="noopener"><span class="dot2"></span>Ideal Home — Kitchens<span class="why">practical, UK</span></a>
+        <a href="https://www.pluck.co.uk/kitchen-projects/" target="_blank" rel="noopener"><span class="dot2"></span>Pluck — bespoke kitchen projects<span class="why">period homes</span></a>
+        <a href="https://www.ikea.com/gb/en/rooms/kitchen/gallery/" target="_blank" rel="noopener"><span class="dot2"></span>IKEA UK — Kitchen gallery<span class="why">budget layouts</span></a>
+        <a href="https://www.houzz.co.uk/photos/kitchen" target="_blank" rel="noopener"><span class="dot2"></span>Houzz UK — Kitchen photos<span class="why">real projects</span></a>
+      </div></details>
     </div>
 
     <!-- Main bathroom -->
@@ -685,6 +709,12 @@ footer b{color:var(--ink-soft)}
         <li><span class="tick"></span>Sanitaryware &amp; shower screen</li>
       </ul>
       <div class="room-foot"><span><b>£8,800</b> budget</span><span>Due 8 Aug</span></div>
+      <details class="insp"><summary class="insp-h">✦ Inspiration for this room<span class="chev">▸</span></summary><div class="insp-list">
+        <a href="https://www.houseandgarden.co.uk/gallery/bathroom-ideas" target="_blank" rel="noopener"><span class="dot2"></span>House &amp; Garden — Bathroom ideas<span class="why">timeless UK</span></a>
+        <a href="https://www.idealhome.co.uk/all-rooms/bathroom" target="_blank" rel="noopener"><span class="dot2"></span>Ideal Home — Bathrooms<span class="why">small-space tips</span></a>
+        <a href="https://www.houzz.co.uk/photos/bathroom" target="_blank" rel="noopener"><span class="dot2"></span>Houzz UK — Bathroom photos<span class="why">real projects</span></a>
+        <a href="https://www.ikea.com/gb/en/rooms/bathroom/gallery/" target="_blank" rel="noopener"><span class="dot2"></span>IKEA UK — Bathroom gallery<span class="why">storage-led</span></a>
+      </div></details>
     </div>
 
     <!-- En-suite -->
@@ -700,6 +730,12 @@ footer b{color:var(--ink-soft)}
         <li><span class="tick"></span>Sanitaryware</li>
       </ul>
       <div class="room-foot"><span>Depends: Main Bathroom</span><span>Due 22 Aug</span></div>
+      <details class="insp"><summary class="insp-h">✦ Inspiration for this room<span class="chev">▸</span></summary><div class="insp-list">
+        <a href="https://www.houzz.co.uk/photos/bathroom/small" target="_blank" rel="noopener"><span class="dot2"></span>Houzz UK — Small bathrooms<span class="why">space-saving</span></a>
+        <a href="https://www.houseandgarden.co.uk/gallery/bathroom-ideas" target="_blank" rel="noopener"><span class="dot2"></span>House &amp; Garden — Bathrooms<span class="why">premium looks</span></a>
+        <a href="https://www.idealhome.co.uk/all-rooms/bathroom" target="_blank" rel="noopener"><span class="dot2"></span>Ideal Home — Bathrooms<span class="why">UK practical</span></a>
+        <a href="https://www.pinterest.co.uk/search/pins/?q=small%20ensuite%20ideas" target="_blank" rel="noopener"><span class="dot2"></span>Pinterest — En-suite ideas<span class="why">endless feed</span></a>
+      </div></details>
     </div>
 
     <!-- Living room -->
@@ -715,6 +751,12 @@ footer b{color:var(--ink-soft)}
         <li><span class="tick"></span>Snag list (6 items)</li>
       </ul>
       <div class="room-foot"><span><b>£3,400</b> decor</span><span>Snags by 22 Jul</span></div>
+      <details class="insp"><summary class="insp-h">✦ Inspiration for this room<span class="chev">▸</span></summary><div class="insp-list">
+        <a href="https://www.idealhome.co.uk/all-rooms/living-room" target="_blank" rel="noopener"><span class="dot2"></span>Ideal Home — Living rooms<span class="why">UK, practical</span></a>
+        <a href="https://www.houzz.co.uk/photos/living-room" target="_blank" rel="noopener"><span class="dot2"></span>Houzz UK — Living rooms<span class="why">real projects</span></a>
+        <a href="https://www.houseandgarden.co.uk/article/dos-and-donts-of-living-room-design" target="_blank" rel="noopener"><span class="dot2"></span>House &amp; Garden — Living room do's &amp; don'ts<span class="why">design rules</span></a>
+        <a href="https://www.ikea.com/gb/en/rooms/living-room/gallery/" target="_blank" rel="noopener"><span class="dot2"></span>IKEA UK — Living room gallery<span class="why">budget</span></a>
+      </div></details>
     </div>
 
     <!-- Dining room -->
@@ -730,6 +772,11 @@ footer b{color:var(--ink-soft)}
         <li><span class="tick on"></span>Sign-off</li>
       </ul>
       <div class="room-foot"><span><b>£5,100</b> total</span><span class="good">Signed off 3 Jul</span></div>
+      <details class="insp"><summary class="insp-h">✦ Inspiration for this room<span class="chev">▸</span></summary><div class="insp-list">
+        <a href="https://www.idealhome.co.uk/all-rooms/dining-room" target="_blank" rel="noopener"><span class="dot2"></span>Ideal Home — Dining rooms<span class="why">UK, practical</span></a>
+        <a href="https://www.houzz.co.uk/photos/dining-room" target="_blank" rel="noopener"><span class="dot2"></span>Houzz UK — Dining rooms<span class="why">real projects</span></a>
+        <a href="https://www.houseandgarden.co.uk/interiors" target="_blank" rel="noopener"><span class="dot2"></span>House &amp; Garden — Interiors<span class="why">period style</span></a>
+      </div></details>
     </div>
 
     <!-- Master bedroom -->
@@ -745,6 +792,13 @@ footer b{color:var(--ink-soft)}
         <li><span class="tick"></span>Floor &amp; decoration</li>
       </ul>
       <div class="room-foot"><span>Joinery £4,600</span><span>Due 14 Aug</span></div>
+      <details class="insp"><summary class="insp-h">✦ Inspiration for this room<span class="chev">▸</span></summary><div class="insp-list">
+        <a href="https://www.idealhome.co.uk/all-rooms/bedroom" target="_blank" rel="noopener"><span class="dot2"></span>Ideal Home — Bedrooms<span class="why">UK, practical</span></a>
+        <a href="https://www.houseandgarden.co.uk/gallery/country-bedroom-ideas" target="_blank" rel="noopener"><span class="dot2"></span>House &amp; Garden — Bedroom ideas<span class="why">characterful</span></a>
+        <a href="https://www.johnlewis.com/content/home/bedroom-ideas" target="_blank" rel="noopener"><span class="dot2"></span>John Lewis — Bedroom ideas<span class="why">palettes &amp; styling</span></a>
+        <a href="https://www.ikea.com/gb/en/rooms/bedroom/gallery/" target="_blank" rel="noopener"><span class="dot2"></span>IKEA UK — Bedroom gallery<span class="why">storage-led</span></a>
+        <a href="https://www.houzz.co.uk/photos/bedroom" target="_blank" rel="noopener"><span class="dot2"></span>Houzz UK — Bedrooms<span class="why">real projects</span></a>
+      </div></details>
     </div>
 
     <!-- Bedroom 2 -->
@@ -759,6 +813,12 @@ footer b{color:var(--ink-soft)}
         <li><span class="tick"></span>Floor &amp; decoration</li>
       </ul>
       <div class="room-foot"><span>Fabric works</span><span>Due 20 Aug</span></div>
+      <details class="insp"><summary class="insp-h">✦ Inspiration for this room<span class="chev">▸</span></summary><div class="insp-list">
+        <a href="https://www.idealhome.co.uk/all-rooms/bedroom" target="_blank" rel="noopener"><span class="dot2"></span>Ideal Home — Bedrooms<span class="why">UK, practical</span></a>
+        <a href="https://www.johnlewis.com/content/home/bedroom-ideas" target="_blank" rel="noopener"><span class="dot2"></span>John Lewis — Bedroom ideas<span class="why">calm palettes</span></a>
+        <a href="https://www.pinterest.co.uk/search/pins/?q=small%20bedroom%20ideas" target="_blank" rel="noopener"><span class="dot2"></span>Pinterest — Small bedroom ideas<span class="why">endless feed</span></a>
+        <a href="https://www.houzz.co.uk/photos/bedroom" target="_blank" rel="noopener"><span class="dot2"></span>Houzz UK — Bedrooms<span class="why">real projects</span></a>
+      </div></details>
     </div>
 
     <!-- Bedroom 3 -->
@@ -773,6 +833,12 @@ footer b{color:var(--ink-soft)}
         <li><span class="tick blk"></span>Window handle sticking</li>
       </ul>
       <div class="room-foot"><span>Joinery call-back</span><span>Snags by 19 Jul</span></div>
+      <details class="insp"><summary class="insp-h">✦ Inspiration for this room<span class="chev">▸</span></summary><div class="insp-list">
+        <a href="https://www.idealhome.co.uk/all-rooms/bedroom" target="_blank" rel="noopener"><span class="dot2"></span>Ideal Home — Bedrooms<span class="why">UK, practical</span></a>
+        <a href="https://www.theenglishhome.co.uk/" target="_blank" rel="noopener"><span class="dot2"></span>The English Home — Cottage bedrooms<span class="why">period charm</span></a>
+        <a href="https://www.houseandgarden.co.uk/gallery/country-bedroom-ideas" target="_blank" rel="noopener"><span class="dot2"></span>House &amp; Garden — Bedrooms<span class="why">timeless</span></a>
+        <a href="https://www.pinterest.co.uk/search/pins/?q=period%20bedroom%20ideas" target="_blank" rel="noopener"><span class="dot2"></span>Pinterest — Period bedroom ideas<span class="why">endless feed</span></a>
+      </div></details>
     </div>
 
     <!-- Hallway -->
@@ -788,6 +854,12 @@ footer b{color:var(--ink-soft)}
         <li><span class="tick"></span>Paint &amp; runner</li>
       </ul>
       <div class="room-foot"><span>Joinery</span><span>Due 25 Aug</span></div>
+      <details class="insp"><summary class="insp-h">✦ Inspiration for this room<span class="chev">▸</span></summary><div class="insp-list">
+        <a href="https://www.houseandgarden.co.uk/gallery/hallway-ideas" target="_blank" rel="noopener"><span class="dot2"></span>House &amp; Garden — Hallway ideas<span class="why">UK, stylish</span></a>
+        <a href="https://www.idealhome.co.uk/all-rooms/hallway" target="_blank" rel="noopener"><span class="dot2"></span>Ideal Home — Hallways &amp; stairs<span class="why">practical</span></a>
+        <a href="https://www.houzz.co.uk/photos/hallway" target="_blank" rel="noopener"><span class="dot2"></span>Houzz UK — Hallways<span class="why">real projects</span></a>
+        <a href="https://www.periodliving.co.uk/interiors" target="_blank" rel="noopener"><span class="dot2"></span>Period Living — Interiors<span class="why">period homes</span></a>
+      </div></details>
     </div>
 
     <!-- Exterior -->
@@ -802,6 +874,12 @@ footer b{color:var(--ink-soft)}
         <li><span class="tick"></span>Fencing &amp; planting</li>
       </ul>
       <div class="room-foot"><span><b>£2,800</b> budget</span><span>Due 12 Sep</span></div>
+      <details class="insp"><summary class="insp-h">✦ Inspiration for this room<span class="chev">▸</span></summary><div class="insp-list">
+        <a href="https://www.gardensillustrated.com/garden-design" target="_blank" rel="noopener"><span class="dot2"></span>Gardens Illustrated — Garden design<span class="why">planting-led</span></a>
+        <a href="https://www.idealhome.co.uk/garden/garden-ideas" target="_blank" rel="noopener"><span class="dot2"></span>Ideal Home — Garden ideas<span class="why">UK, practical</span></a>
+        <a href="https://www.houzz.co.uk/photos/garden" target="_blank" rel="noopener"><span class="dot2"></span>Houzz UK — Gardens &amp; exteriors<span class="why">real projects</span></a>
+        <a href="https://www.pinterest.co.uk/search/pins/?q=small%20courtyard%20garden%20ideas" target="_blank" rel="noopener"><span class="dot2"></span>Pinterest — Courtyard garden ideas<span class="why">terrace-sized</span></a>
+      </div></details>
     </div>
   </div>
 
